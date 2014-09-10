@@ -1,4 +1,4 @@
 # Vizify - Virgil
 
-Description forthcoming.
+Description forthcoming, this is just starting to come together.
 

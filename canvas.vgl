@@ -1,0 +1,10 @@
+#
+# This is in it's own file even though it too is an extern, simply
+# because the interface is so big.
+#
+
+export extern {
+  struct Canvas {
+
+  }
+}

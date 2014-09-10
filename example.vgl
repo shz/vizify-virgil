@@ -1,5 +1,4 @@
 import env
-import harness
 
 # Data definition
 
@@ -15,7 +14,7 @@ struct Data {
 
 # Custom animators
 
-method fade(rc : env.RenderContext<Data>, i : int, o : int)
+method fade(rc : RenderContext<Data>, i : int, o : int)
 : env.RenderContext<data> {
   return rc.anim(lambda(c : Canvas, cl : Clock) {
     c.globalAlpha = cl.percent
@@ -24,7 +23,7 @@ method fade(rc : env.RenderContext<Data>, i : int, o : int)
 
 # Custom renderers
 
-method drawThingy(rc : env.RenderContext<Data>, x : int, y : int) {
+method drawThingy(rc : RenderContext<Data>, x : int, y : int) {
   rc.draw(lambda(c : Canvas, cl : Clock, d : Data) {
 
   });
@@ -32,23 +31,16 @@ method drawThingy(rc : env.RenderContext<Data>, x : int, y : int) {
 
 # Root renderer
 
-function render(rc : env.RenderContext<Data>) {
+function render(rc : RenderContext<Data>) {
   rc.fade(100, 100).drawThingy(10, 10)
 }
 
 # Entry point
 
-function main(json : str, c : Canvas) : func<int, void> {
-  let rc = RenderContext<Data>({
-    c = c
-    clock = Clock()
-    config = ContextConfig()
-    data = importData<Data>(json)
+export function createViz(json : str) : CardConfig<Data> {
+  return new CardConfig<Data>({
+    data = new Data()
+    renderer = render
+    duration = 100
   })
-  out duration = 2000
-
-  return lambda(t) {
-    rc.clock.update(t, duration)
-    rc.render()
-  }
 }
