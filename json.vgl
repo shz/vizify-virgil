@@ -1,0 +1,29 @@
+#
+# Vizify platform definition.  All externed structs, functions, methods,
+# etc. must be defined by the host platform.
+#
+extern {
+  
+  struct JSON {
+  }
+
+  method asStr(j : JSON) : str
+  method asInt(j : JSON) : int
+  method asFloat(j : JSON) : float
+  method asBool(j : JSON) : bool
+  method asList(j : JSON) : list<JSON>
+  method get(j : JSON, key : str) : JSON
+
+  function parseJSON(json : str) : JSON
+}
+
+function main : int
+{
+  let jsonString = "{\"foo\" : \"bar\"}"
+  let json = parseJSON(jsonString)
+  let fooValue = json.get("foo").asStr()
+  if fooValue == "bar" {
+    return 10
+  }
+  return 0
+}
