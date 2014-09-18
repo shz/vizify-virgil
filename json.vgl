@@ -16,14 +16,3 @@ extern {
 
   function parseJSON(json : str) : JSON
 }
-
-function main : int
-{
-  let jsonString = "{\"foo\" : \"bar\"}"
-  let json = parseJSON(jsonString)
-  let fooValue = json.get("foo").asStr()
-  if fooValue == "bar" {
-    return 10
-  }
-  return 0
-}
