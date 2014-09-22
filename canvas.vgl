@@ -5,6 +5,8 @@
 
 export extern {
   struct Canvas {
-
   }
+
+  method setFillStyle(c : Canvas, r : float, g : float, b : float)
+  method fillRect(c : Canvas, x : float, y : float, w : float, h : float)
 }

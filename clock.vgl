@@ -1,11 +1,11 @@
-struct Clock {
+export struct Clock {
   fromStart = 0  # ms from clock start
   fromEnd = 0    # ms from clock end
   percent = 0.0f # % through clock
 }
 
-method update(c : Clock, elapsed : int, duration : int) {
-  c.fromState = elapsed
+export method update(c : Clock, elapsed : int, duration : int) {
+  c.fromStart = elapsed
   c.fromEnd = duration - elapsed
   c.percent = (1.0f * elapsed) / duration
 }
