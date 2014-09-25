@@ -4,6 +4,18 @@
 #
 
 export extern {
+
+  
+  struct TextLayoutLineSpecifier {
+    
+  }
+
+  struct TextLayoutSpecifier {
+    lines: list<TextLayoutLineSpecifier> = null
+    lineHeight: float = 0.0
+  }
+
+
   struct Canvas {
     width : int
     height : int
