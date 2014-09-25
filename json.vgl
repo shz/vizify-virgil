@@ -2,7 +2,7 @@
 # Vizify platform definition.  All externed structs, functions, methods,
 # etc. must be defined by the host platform.
 #
-extern {
+export extern {
   
   struct JSON {
   }

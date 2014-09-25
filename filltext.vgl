@@ -1,0 +1,191 @@
+var Canvas = require('../canvas/vizify_canvas')
+  , metrics = require('../fonts/metrics')
+  ;
+
+var ctx = null;
+var measure = function(font, text, size) {
+  if (!ctx)
+    ctx = new Canvas();
+
+  ctx.font = font.px(size);
+  var w = ctx.measureText(text).width;
+  var h = 1; // TODO
+  return {
+    width: w,
+    height: h
+  }
+};
+
+var calculateLineHeight = function(m, lineHeight) {
+  return (m.cap + m.descender + m.ascender) * lineHeight;
+};
+
+
+var makeLayoutSettings = function(proto) {
+  var settings = {
+    fontSize: 16,
+    maxFontSize: Infinity,
+    lineHeight: 1,
+    textAlign: 'left',
+    verticalAlign: 'middle'
+  };
+
+  if (proto) for (var i in proto) /* istanbul ignore else */ if (proto.hasOwnProperty(i))
+    settings[i] = proto[i];
+
+  return settings;
+};
+
+exports.paragraph = function(text, font, width, height, settings) {
+  settings = makeLayoutSettings(settings);
+  width = width || 1;
+  height = height || 1;
+
+  var lines = text.split(/\r?\n/);
+  for (var i=0; i<lines.length; i++) {
+    var chunks = lines[i].match(/\S*\s*/g).filter(function(s) { return s.length });
+    var line = lines[i] = [];
+
+    // Find out how many words to chomp
+    while (chunks.length) {
+      var max = chunks.length;
+      var min = 1;
+      var prevMax = NaN;
+      var prevMin = NaN;
+      while (true) {
+        prevMax = max;
+        prevMin = min;
+        var cur = (((max - min) / 2 + min) + 0.5)|0;
+        var m = measure(font, chunks.slice(0, cur).join('').replace(/\s*$/, ''), settings.fontSize);
+        if (m.width > width) {
+          max = cur;
+        } else {
+          min = cur;
+        }
+
+        if (max == min || (prevMax == max && prevMin == min))
+          break;
+      }
+
+      // Chomp 'em
+      line.push(chunks.splice(0, min).join('').replace(/\s*$/, ''));
+    }
+  }
+
+  // Flatten lines
+  var result = [];
+  for (var i=0; i<lines.length; i++)
+    for (var j=0; j<lines[i].length; j++)
+      result.push(lines[i][j]);
+
+  // Calculate line metrics
+  var maxWidth = 0;
+  result = result.map(function(line) {
+
+    // Determine line width
+    var w = measure(font, line, settings.fontSize).width
+    if (w > maxWidth)
+      maxWidth = w;
+
+    // Adjust for text alignment
+    var left = 0;
+    if (settings.textAlign == 'center')
+      left = ((width - w) / 2)|0
+    else if (settings.textAlign == 'right')
+      left = (width - w)|0;
+
+    return {
+      text: line,
+      left: left,
+      w: w
+    };
+  });
+
+  // Get metrics for this font/size
+  var m = metrics.get(font.family, font.style, settings.fontSize);
+  var lineHeight = calculateLineHeight(m, settings.lineHeight);
+
+  // Adjust vertical offset to fit in space
+  var verticalOffset = 0;
+  var contentHeight = result.length * lineHeight;
+  if (contentHeight < height) {
+    if (settings.verticalAlign == 'middle')
+      verticalOffset = ((height / 2) - (contentHeight / 2))|0;
+    else if (settings.verticalAlign == 'bottom')
+      verticalOffset = height - contentHeight;
+  }
+
+  return {
+    font: font,
+    size: settings.fontSize,
+    metrics: m,
+    lineHeight: lineHeight,
+    verticalOffset: verticalOffset,
+    lines: result,
+    w: width,
+    h: height
+  };
+};
+
+exports.line = function(text, font, width, height, settings) {
+  settings = makeLayoutSettings(settings);
+  width = width || 1;
+  height = height || 1;
+
+  text = text.replace(/\r?\n/, ' ');
+
+  var min = 0;
+  var max = 200;
+  var best = NaN;
+  var prevBest = NaN;
+  while (true) {
+    prevBest = best;
+    var cur = (max - min) / 2 + min;
+    var size = measure(font, text, cur|0);
+    if (size.width < width && size.height < height) {
+      min = cur;
+      best = cur|0;
+    } else {
+      max = cur;
+      prevBest = NaN;
+    }
+
+    if (cur < 1) {
+      best = 0;
+      break;
+    }
+    if (prevBest == best)
+      break;
+  }
+
+  var m = measure(font, text, best);
+  var mets = metrics.get(font.family, font.style, best);
+
+  var left = 0;
+  if (settings.textAlign == 'center')
+    left = ((width - m.width) / 2)|0;
+  else if (settings.textAlign == 'right')
+    left = width - m.width;
+
+  var lineHeight = calculateLineHeight(mets, settings.lineHeight);
+  var verticalOffset = 0;
+  if (settings.verticalAlign == 'middle')
+    verticalOffset = ((height / 2) - (lineHeight / 2))|0;
+  else if (settings.verticalAlign == 'bottom')
+    verticalOffset = height - lineHeight;
+
+  return {
+    font: font,
+    size: Math.min(best, settings.maxFontSize),
+    metrics: mets,
+    lineHeight: lineHeight,
+    verticalOffset: verticalOffset,
+    w: width,
+    h: height,
+    lines: [{
+      text: text,
+      left: left,
+      w: m.width
+    }]
+  }
+};
