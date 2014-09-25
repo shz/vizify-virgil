@@ -5,8 +5,12 @@ struct PolyEngine {
   df : func<float,float> = null
 }
 
-struct CubicBezierEngine {
+export struct CubicBezierEngine {
   f : func<float,float> = null
+}
+
+export method at (engine:CubicBezierEngine, t:float) : float {
+  return engine.f(t)
 }
 
 function poly(n1:float, n2:float) : PolyEngine {
@@ -49,3 +53,12 @@ export function generateCubicBezierEngine(x1:float, y1:float, x2:float, y2:float
   return result
 }
 
+
+
+export struct EasingLibrary {
+  ease = generateCubicBezierEngine(0.25, 0.1, 0.25, 1f)
+  linear = generateCubicBezierEngine(0f, 0f, 1f, 1f)
+  easeIn = generateCubicBezierEngine(0.42, 0f, 1f, 1f)
+  easeOut = generateCubicBezierEngine(0f, 0f, 0.58, 1f)
+  easeInOut = generateCubicBezierEngine(0.42, 0f, 0.58, 1f)
+}
