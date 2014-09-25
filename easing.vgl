@@ -19,8 +19,8 @@ function poly(n1:float, n2:float) : PolyEngine {
   let a = 1 - c - b
 
   return new PolyEngine({
-    f = lambda(x:float) { return x * (c + x * (b + x * a)) }
-    df = lambda(x:float) { return c + x * (2 * b + 3 * a * x) }
+    f = lambda(x:float):float { return x * (c + x * (b + x * a)) }
+    df = lambda(x:float):float { return c + x * (2 * b + 3 * a * x) }
   })
 }
 
@@ -61,4 +61,5 @@ export struct EasingLibrary {
   easeIn = generateCubicBezierEngine(0.42, 0f, 1f, 1f)
   easeOut = generateCubicBezierEngine(0f, 0f, 0.58, 1f)
   easeInOut = generateCubicBezierEngine(0.42, 0f, 0.58, 1f)
+  endAtStop = generateCubicBezierEngine(0.38,0.65,0.52,1f)
 }
