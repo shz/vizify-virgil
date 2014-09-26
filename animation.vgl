@@ -15,9 +15,18 @@ export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderCo
 }
 
 
-#  method delay(rc : RenderContext<'T>, amount : int) : RenderContext<'T>
-#  method until(rc : RenderContext<'T>, amount : int) : RenderContext<'T>
-#  method runFor(rc : RenderContext<'T>, amount : int) : RenderContext<'T>
+export method delay(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
+  let root = rc.fork()
+  root.config.start = amount
+  return root
+}
+
+export method runFor(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
+  let root = rc.fork()
+  root.config.duration = amount
+  root.config.end = -1
+  return root
+}
 
 export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
   let root = rc.fork()
