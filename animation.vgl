@@ -43,7 +43,7 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
 
   # Skip if we don't need to be drawn right now
   if ((fromStart < 0) || (fromEnd < 0)) {
-    return null
+    return void
   }
 
   # Create a time-adjusted context
