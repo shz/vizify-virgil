@@ -29,6 +29,8 @@ export extern {
   method setLineWidth (c:Canvas, val:float)
   method setFont (c:Canvas, fontFam:str, pxSize: int)
 
+  method getGlobalAlpha (c:Canvas) : float
+
   method fillRect(c : Canvas, x:float, y:float, w:float, h:float)
   method stroke(c : Canvas)
   method fill(c : Canvas)
