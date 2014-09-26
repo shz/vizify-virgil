@@ -1,3 +1,7 @@
+import env
+import clock
+import canvas
+
 export extern vizify {
   method fork(rc : RenderContext<'T>) : RenderContext<'T>
 }
@@ -27,10 +31,6 @@ export method runFor(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
   root.config.duration = amount
   root.config.end = -1
   return root
-}
-
-export method compressX(rc:RenderContext<'T>, xRaw : float) : float {
-  return xRaw * rc.data.g.xCompressionFactor
 }
 
 export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
