@@ -1,10 +1,6 @@
-#
-# This is in its own file even though it too is an extern, simply
-# because the interface is so big.
-#
+import color
 
 export extern vizify {
-
   
   struct TextLayoutLineSpecifier {
   }
@@ -35,7 +31,7 @@ export extern vizify {
   method stroke(c : Canvas)
   method fill(c : Canvas)
   method save(c : Canvas)
-  method drawImage(c : Canvas, img:VzImage, x:int, y:int, width:int, height:int, dx:float, dy:float, dWidth:float, dHeight:float)
+  # method drawImage(c : Canvas, img:VzImage, x:int, y:int, width:int, height:int, dx:float, dy:float, dWidth:float, dHeight:float)
   method restore(c : Canvas)
   method translate(c : Canvas, x:float, y:float)
   method scale(c : Canvas, x:float, y:float)
