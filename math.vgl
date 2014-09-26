@@ -2,7 +2,7 @@ export function pi : float {
   return 3.1415926535897932
 }
 
-export function max(x1 : float, x2 : float) : float {
+export function vglmax(x1 : float, x2 : float) : float {
   if (x1 < x2) {
     return x2
   }else{
@@ -10,7 +10,7 @@ export function max(x1 : float, x2 : float) : float {
   }
 }
 
-export function min(x1 : float, x2 : float) : float {
+export function vglmin(x1 : float, x2 : float) : float {
   if (x1 < x2) {
     return x1
   }else{
@@ -18,19 +18,18 @@ export function min(x1 : float, x2 : float) : float {
   }
 }
 
-export method abs(x : float) : float {
+export method vglabs(x : float) : float {
   return (x < 0) ? (0-x) : x
 }
 
 export extern {
-  function forceInt (f : float) : int
-  function mathRound (f : float) : int
-  function cos(f : float) : float
   function pow(f : float, exp : int) : float
+  function max(x1 : float, x2 : float) : float
+  function min(x1 : float, x2 : float) : float
+  method abs(inNumeric : float) : float
 }
 
-
-# Rounding to a particular precision -- e.g. 3.16.round(1) => 3.2
-export method round(f : float, resolution : int) : float {
+# Rounding to a particular precision -- e.g. (3.16).round(0.1) => 3.2
+export method roundToPrecision(f : float, resolution : float) : float {
   return (    (f*(1.0f/resolution) + 0.5).floor()  / (1.0f/resolution)    )
 }

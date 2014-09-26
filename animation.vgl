@@ -1,0 +1,55 @@
+import env
+import canvas
+import clock
+
+export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderContext<'T> {
+  let root = rc.fork()
+  root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
+    if rc.clock.fromStart < inDur {
+      ctx.setGlobalAlpha(1f * clock.fromStart / inDur)
+    } else if rc.clock.fromEnd < outDur {
+      ctx.setGlobalAlpha(1f * clock.fromEnd / outDur)
+    }
+  })
+  return root
+}
+
+
+#  method delay(rc : RenderContext<'T>, amount : int) : RenderContext<'T>
+#  method until(rc : RenderContext<'T>, amount : int) : RenderContext<'T>
+#  method runFor(rc : RenderContext<'T>, amount : int) : RenderContext<'T>
+
+export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
+  let root = rc.fork()
+
+  # Sanity check on duration
+  if ( (root.config.end > 0) && (root.config.duration > -1) ) {
+    # TODO: throw new Error('This chain has both an end time and a duration, which is invalid');
+  }
+
+  # // Do some timing calculation
+  let fromStart = rc.clock.fromStart - root.config.start
+  let fromEnd = (root.config.duration > -1) ? (rc.clock.fromEnd - root.config.end) : (root.config.start + root.config.duration - rc.clock.fromStart)
+
+  # // Skip if we don't need to be drawn right now
+  if ((fromStart < 0) || (fromEnd < 0)) {
+    return null
+  }
+
+  # // Create a time-adjusted context
+  root.clock.fromStart = fromStart
+  root.clock.fromEnd = fromEnd
+  root.clock.percent = 1f * fromStart / (fromStart + fromEnd)
+
+  # // Apply the operation stack
+  root.c.save()
+  for i = 0 upto root.config.operations.length {
+    root.config.operations[i](root.c, root.clock)
+  }
+
+  # // Do the actual call
+  f(root)
+
+  #// Unwind the operation stack
+  root.c.restore()
+}

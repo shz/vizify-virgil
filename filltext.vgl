@@ -36,6 +36,7 @@ var makeLayoutSettings = function(proto) {
   return settings;
 };
 
+
 exports.paragraph = function(text, font, width, height, settings) {
   settings = makeLayoutSettings(settings);
   width = width || 1;
@@ -43,6 +44,10 @@ exports.paragraph = function(text, font, width, height, settings) {
 
   var lines = text.split(/\r?\n/);
   for (var i=0; i<lines.length; i++) {
+
+    # Consider this line: "And this shall be the most interesting thing.  And this shall be."
+    # The result of the match will be: ["And ", "this ", "shall ", "be ", "the ", "most ", "interesting ", "thing.  ", "And ", "this ", "shall ", "be.", ""]
+    # After the filtering, the result will be the same EXCEPT that empty string at the very end will be gone.
     var chunks = lines[i].match(/\S*\s*/g).filter(function(s) { return s.length });
     var line = lines[i] = [];
 
