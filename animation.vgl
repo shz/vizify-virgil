@@ -2,10 +2,6 @@ import env
 import clock
 import canvas
 
-export extern vizify {
-  method fork(rc : RenderContext<'T>) : RenderContext<'T>
-}
-
 
 export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderContext<'T> {
   let root = rc.fork()
