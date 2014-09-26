@@ -3,7 +3,7 @@
 # because the interface is so big.
 #
 
-export extern {
+export extern vizify {
 
   
   struct TextLayoutLineSpecifier {
