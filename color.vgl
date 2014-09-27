@@ -1,13 +1,15 @@
 import math
 
-export struct Color {
-  r = 0.0
-  g = 0.0
-  b = 0.0
-  a = 1.0
+export extern vizify {
+  struct Color {
+    r : float
+    g : float
+    b : float
+    a : float
+  }
 }
 
-export function rgb(ir : int, ig : int, ib : int) : Color { 
+export function rgb(ir : int, ig : int, ib : int) : Color {
   let c = new Color({
     r = ir/255.0
     g = ig/255.0
@@ -16,7 +18,7 @@ export function rgb(ir : int, ig : int, ib : int) : Color {
   return c
 }
 
-export function rgba(ir : int, ig : int, ib : int, ia : float) : Color { 
+export function rgba(ir : int, ig : int, ib : int, ia : float) : Color {
   let c = new Color({
     r = ir/255.0
     g = ig/255.0
@@ -26,7 +28,7 @@ export function rgba(ir : int, ig : int, ib : int, ia : float) : Color {
   return c
 }
 
-export function blackish(ia : float) : Color { 
+export function blackish(ia : float) : Color {
   let c = new Color({
     r = 0
     g = 0
