@@ -1,16 +1,65 @@
+import math
+
 struct PolyEngine {
-  f : lambda(x:float) : float = null
-  df : lambda(x:float) : float = null
+  f : func<float,float> = null
+  df : func<float,float> = null
 }
 
-function poly(n1:float, n2:float) :  {
+export struct CubicBezierEngine {
+  f : func<float,float> = null
+}
+
+export method at (engine:CubicBezierEngine, t:float) : float {
+  return engine.f(t)
+}
+
+function poly(n1:float, n2:float) : PolyEngine {
   let c = 3 * n1
   let b = 3 * (n2 - n1) - c
   let a = 1 - c - b
 
   return new PolyEngine({
-    f = lambda(x:float) { return x * (c + x * (b + x * a)) }
-    df = lambda(x:float) { return c + x * (2 * b + 3 * a * x) }
+    f = lambda(x:float):float { return x * (c + x * (b + x * a)) }
+    df = lambda(x:float):float { return c + x * (2 * b + 3 * a * x) }
   })
 }
 
+
+export function generateCubicBezierEngine(x1:float, y1:float, x2:float, y2:float) : CubicBezierEngine {
+  
+  # Bezier polynomials
+  let x = poly(x1, x2)
+  let y = poly(y1, y2)
+
+  let result = new CubicBezierEngine()
+
+  # Newton's method
+  result.f = lambda(n:float):float {
+    mut v = n
+
+    for i = 0 upto 5 {
+      let z = x.f(v) - n
+
+      # // Finish if we're close enough
+      if (z.abs() < 0.001) {
+        break
+      }
+
+      v = v - z / x.df(v)
+    }
+    return y.f(v)
+  }
+
+  return result
+}
+
+
+
+export struct EasingLibrary {
+  ease = generateCubicBezierEngine(0.25, 0.1, 0.25, 1f)
+  linear = generateCubicBezierEngine(0f, 0f, 1f, 1f)
+  easeIn = generateCubicBezierEngine(0.42, 0f, 1f, 1f)
+  easeOut = generateCubicBezierEngine(0f, 0f, 0.58, 1f)
+  easeInOut = generateCubicBezierEngine(0.42, 0f, 0.58, 1f)
+  endAtStop = generateCubicBezierEngine(0.38,0.65,0.52,1f)
+}

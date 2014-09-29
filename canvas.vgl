@@ -1,18 +1,13 @@
-#
-# This is in it's own file even though it too is an extern, simply
-# because the interface is so big.
-#
+import color
 
-export extern {
+export extern vizify {
 
-  
   struct TextLayoutLineSpecifier {
-    
   }
 
   struct TextLayoutSpecifier {
-    lines: list<TextLayoutLineSpecifier> = null
-    lineHeight: float = 0.0
+    lines: list<TextLayoutLineSpecifier>
+    lineHeight: float
   }
 
 
@@ -31,6 +26,8 @@ export extern {
   method setLineDash(c : Canvas, dashspec : list<int>)
   method setFont (c:Canvas, fontFam:str, pxSize: int)
 
+  method getGlobalAlpha (c:Canvas) : float
+
   method fillRect(c : Canvas, x:float, y:float, w:float, h:float)
 
   method beginPath(c : Canvas)
@@ -40,6 +37,8 @@ export extern {
 
   method setClipRect(c : Canvas, x:float, y:float, w:float, h:float)
   method clearClipRect(c : Canvas)
+  method startClip(c : Canvas, x : int, y : int, w : int, h : int)
+  method endClip(c : Canvas)
 
   method save(c : Canvas)
   method restore(c : Canvas)
@@ -49,8 +48,9 @@ export extern {
   method translate(c : Canvas, x:float, y:float)
   method scale(c : Canvas, x:float, y:float)
 
-  method rect(c : Canvas, x : float, y : float, w : float, h : float)
+  method setLineDash(c : Canvas, dashspec : list<int>)
   method arc(c : Canvas, xOrb:float, yOrb:float, radius:float, angleStart:float, angleEnd:float, clockwise:bool)
+  method rect(c : Canvas, x : float, y : float, w : float, h : float)
   method bezierCurveTo(c : Canvas, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float)
   method quadraticCurveTo(c : Canvas, x1:float, y1:float, x2:float, y2:float)
   method moveTo(c : Canvas, x : float, y : float)

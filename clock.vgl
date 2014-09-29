@@ -1,11 +1,7 @@
-export struct Clock {
-  fromStart = 0  # ms from clock start
-  fromEnd = 0    # ms from clock end
-  percent = 0.0f # % through clock
-}
-
-export method update(c : Clock, elapsed : int, duration : int) {
-  c.fromStart = elapsed
-  c.fromEnd = duration - elapsed
-  c.percent = (1.0f * elapsed) / duration
+export extern vizify {
+  struct Clock {
+    fromStart : int # ms from clock start
+    fromEnd : int   # ms from clock end
+    percent : float # % through clock
+  }
 }
