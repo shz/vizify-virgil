@@ -6,9 +6,9 @@ import canvas
 export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderContext<'T> {
   let root = rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
-    if rc.clock.fromStart < inDur {
+    if clock.fromStart < inDur {
       ctx.setGlobalAlpha(1f * clock.fromStart / inDur)
-    } else if rc.clock.fromEnd < outDur {
+    } else if clock.fromEnd < outDur {
       ctx.setGlobalAlpha(1f * clock.fromEnd / outDur)
     }
   })
@@ -57,6 +57,10 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
   root.clock.fromStart = fromStart
   root.clock.fromEnd = fromEnd
   root.clock.percent = 1f * fromStart / (fromStart + fromEnd)
+  root.config.duration = -1
+  root.config.end = 0
+  root.config.start = 0
+  root.config.operations = new list<func<Canvas, Clock, void>>()
   f(root)
 
   # Unwind the operation stack
