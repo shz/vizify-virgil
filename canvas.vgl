@@ -43,7 +43,7 @@ export extern vizify {
   method save(c : Canvas)
   method restore(c : Canvas)
 
-  method drawImage(c : Canvas, img:VzImage, x:int, y:int, width:int, height:int, dx:float, dy:float, dWidth:float, dHeight:float)
+  # method drawImage(c : Canvas, img:VzImage, x:int, y:int, width:int, height:int, dx:float, dy:float, dWidth:float, dHeight:float)
 
   method translate(c : Canvas, x:float, y:float)
   method scale(c : Canvas, x:float, y:float)
