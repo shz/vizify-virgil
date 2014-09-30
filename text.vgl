@@ -1,0 +1,61 @@
+export method trim(s:str) : str {
+  return s.trimStart().trimEnd()
+}
+
+export method trimStart(s:str) : str {
+  mut result = ""
+  mut boolStillTrimming = true
+  for i = 0 upto s.length {
+    if (boolStillTrimming) {
+      if ( ! (s.charAt(i) != " ")) {
+        result = result + s.charAt(i)
+        boolStillTrimming = false
+      }
+    }else{
+      result = result + s.charAt(i) 
+    }
+  } 
+}
+
+export method trimEnd(s:str) : str {
+  mut result = ""
+  mut boolStillTrimming = true
+  for i = (s.length - 1) downto -1 {
+    if (boolStillTrimming) {
+      if ( ! (s.charAt(i) != " ")) {
+        result = s.charAt(i) + result
+        boolStillTrimming = false
+      }
+    }else{
+      result = s.charAt(i) + result
+    }
+  }
+}
+
+export method join(strset : list<str>, delim : str) : str {
+  mut result = ""
+  for i = 0 upto (strset.length-1) {
+    result = result + strset[i] + delim
+  }
+  result = result + strset[strset.length-1]
+  return result
+}
+
+
+# The extract(startIndex, count) method returns a list containing the selected elements from a given list.
+# If the count is 0, the result is an empty list.
+# If the count is -1, the semantics are "return the entire sublist starting from given start index to the END OF THE LIST.
+export method extract(haystack : list<'T>, start:int, count:int) : list<'T> {
+  mut result = new list<'T>()
+  mut numToExtract = count
+  if count == 0 {
+    return result
+  }
+  if count < 0 {
+    numToExtract = haystack.length - start
+  }
+  for i = start upto start+count {
+    result.push(haystack[i])
+  }
+  return result
+}
