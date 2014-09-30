@@ -30,36 +30,35 @@ export method runFor(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
 }
 
 export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
-  let root = rc.fork()
+
 
   # Sanity check on duration
-  if ( (root.config.end > 0) && (root.config.duration > -1) ) {
+  if ( (rc.config.end > 0) && (rc.config.duration > -1) ) {
     # TODO: throw new Error('This chain has both an end time and a duration, which is invalid');
   }
 
   # Do some timing calculation
-  let fromStart = rc.clock.fromStart - root.config.start
-  let fromEnd = (root.config.duration > -1) ? (rc.clock.fromEnd - root.config.end) : (root.config.start + root.config.duration - rc.clock.fromStart)
+  let fromStart = rc.clock.fromStart - rc.config.start
+  let fromEnd = (rc.config.duration < 0) ? (rc.clock.fromEnd - rc.config.end) : (rc.config.start + rc.config.duration - rc.clock.fromStart)
 
   # Skip if we don't need to be drawn right now
   if ((fromStart < 0) || (fromEnd < 0)) {
     return void
   }
 
-  # Create a time-adjusted context
+  # Apply the operation stack
+  rc.c.save()
+  for i = 0 upto rc.config.operations.length {
+    rc.config.operations[i](rc.c, rc.clock)
+  }
+
+  # Create a new, time-adjust render context for the actual call
+  let root = rc.fork()
   root.clock.fromStart = fromStart
   root.clock.fromEnd = fromEnd
   root.clock.percent = 1f * fromStart / (fromStart + fromEnd)
-
-  # Apply the operation stack
-  root.c.save()
-  for i = 0 upto root.config.operations.length {
-    root.config.operations[i](root.c, root.clock)
-  }
-
-  # Do the actual call
   f(root)
 
   # Unwind the operation stack
-  root.c.restore()
+  rc.c.restore()
 }
