@@ -117,6 +117,7 @@ export struct ParagraphLayoutSpec {
   size: int = 0
   # metrics: m,
   lineHeight : float = 0f
+  contentHeight: float = 0f
   verticalOffset: float = 0f
   lines: list<LineLayoutSpec> = []
   w: int = 0
@@ -150,15 +151,16 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
       while (true) {
         prevMax = max
         prevMin = min
-        let cur = (((max - min) / 2 + min) + 0.5).round()
-        let mwidth = c.measureTextWidth(chunks.extract(0, cur-1).join("").trim())
+        let cur = (min + (max - min)/2f).round()
+        let thisTest = chunks.extract(0, cur).join("").trim()
+        let mwidth = c.measureTextWidth(thisTest)
         if (mwidth > width) {
           max = cur
         } else {
           min = cur
         }
 
-        if (max == min || (prevMax == max && prevMin == min)) {
+        if ((max == min) || (((prevMax == max) && (prevMin == min)))) {
           break
         }
       }
@@ -214,20 +216,20 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
 
   # Adjust vertical offset to fit in space
   mut verticalOffsetCalc = 0
-  let contentHeight = resultB.length * lineHeightCalc
-  if (contentHeight < height) {
+  let contentHeightCalc = resultB.length * lineHeightCalc
+  if (contentHeightCalc < height) {
     if (settings.verticalAlign == "middle") {
-      verticalOffsetCalc = ((height / 2) - (contentHeight / 2)).round()
+      verticalOffsetCalc = ((height / 2) - (contentHeightCalc / 2)).round()
     }
     else if (settings.verticalAlign == "bottom") {
-      verticalOffsetCalc = height - contentHeight
+      verticalOffsetCalc = height - contentHeightCalc
     }
   }
 
   return new ParagraphLayoutSpec({
     fontname = fontnameToUse
     size = settings.fontSize
-    # metrics = m
+    contentHeight = contentHeightCalc
     lineHeight = lineHeightCalc
     verticalOffset = verticalOffsetCalc
     lines = resultB
