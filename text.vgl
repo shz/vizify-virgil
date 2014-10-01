@@ -78,6 +78,7 @@ export method tokenizeByWhiteSpace(haystackIn : str) : list<str> {
       if (inWhiteSpace) {
         result.push(curAccum)
         curAccum = ""
+        inWhiteSpace = false
       }
     }
     curAccum = curAccum + curChar
