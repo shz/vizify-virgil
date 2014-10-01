@@ -1,3 +1,18 @@
+import canvas
+
+export method fillTextAligned(c : Canvas, text: str, x: float, y: float, aligntype: str) {
+  let wid = c.measureTextWidth(text)
+  mut theX = x
+  if (aligntype == "R") {
+    theX = x - wid
+  }
+  if (aligntype == "C") {
+    theX = x - wid/2f
+  }
+  c.fillText(text, theX, y)
+}
+
+
 export method trimStart(s:str) : str {
   mut result = ""
   mut boolStillTrimming = true
