@@ -12,7 +12,6 @@ export method fillTextAligned(c : Canvas, text: str, x: float, y: float, alignty
   c.fillText(text, theX, y)
 }
 
-
 export method trimStart(s:str) : str {
   mut result = ""
   mut boolStillTrimming = true
@@ -124,9 +123,10 @@ export struct ParagraphLayoutSpec {
   h: int = 0
 }
 
-export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float, height:float, settings: TextLayoutParagraphConfig) {
+export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float, height:float, settings: TextLayoutParagraphConfig) : ParagraphLayoutSpec {
 
   c.setFont(fontname, settings.fontSize)
+  let fontnameToUse = fontname
   # settings = makeLayoutSettings(settings)
 
   # In the future we will support splitting the text into paragraphs based on \r\n delimiters.
@@ -164,7 +164,7 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
       }
 
       # Chomp
-      line.push(chunks.extract(0, min-1).join("").trim())
+      line.push(chunks.removeRange(0, min).join("").trim())
     }
     linesOut.push(line)
   }
@@ -225,7 +225,7 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
   }
 
   return new ParagraphLayoutSpec({
-    font = fontname
+    fontname = fontnameToUse
     size = settings.fontSize
     # metrics = m
     lineHeight = lineHeightCalc
@@ -236,3 +236,12 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
   })
 }
 
+
+export method fillFittedText(c : Canvas, spec: ParagraphLayoutSpec, x: float, y: float) {
+  c.setFont(spec.fontname, spec.size)
+  mut yCur = y + spec.verticalOffset + (spec.size*0.7)
+  for i = 0 upto spec.lines.length {
+    c.fillText(spec.lines[i].text, (x + spec.lines[i].left), yCur)
+    yCur = yCur + spec.lineHeight
+  }
+}
