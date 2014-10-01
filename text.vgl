@@ -1,20 +1,17 @@
-export method trim(s:str) : str {
-  return s.trimStart().trimEnd()
-}
-
 export method trimStart(s:str) : str {
   mut result = ""
   mut boolStillTrimming = true
   for i = 0 upto s.length {
     if (boolStillTrimming) {
-      if ( ! (s.charAt(i) != " ")) {
-        result = result + s.charAt(i)
+      if (s.at(i) != " ") {
+        result = result + s.at(i)
         boolStillTrimming = false
       }
     }else{
-      result = result + s.charAt(i) 
+      result = result + s.at(i) 
     }
-  } 
+  }
+  return result
 }
 
 export method trimEnd(s:str) : str {
@@ -22,14 +19,20 @@ export method trimEnd(s:str) : str {
   mut boolStillTrimming = true
   for i = (s.length - 1) downto -1 {
     if (boolStillTrimming) {
-      if ( ! (s.charAt(i) != " ")) {
-        result = s.charAt(i) + result
+      if (s.at(i) != " ") {
+        result = s.at(i) + result
         boolStillTrimming = false
       }
-    }else{
-      result = s.charAt(i) + result
+    }
+    else{
+      result = s.at(i) + result
     }
   }
+  return result
+}
+
+export method trim(s:str) : str {
+  return s.trimStart().trimEnd()
 }
 
 export method join(strset : list<str>, delim : str) : str {
@@ -42,13 +45,15 @@ export method join(strset : list<str>, delim : str) : str {
 }
 
 
+##### COMILER CRHAS IS AVTER THIS
+
 # The extract(startIndex, count) method returns a list containing the selected elements from a given list.
 # If the count is 0, the result is an empty list.
 # If the count is -1, the semantics are "return the entire sublist starting from given start index to the END OF THE LIST.
 export method extract(haystack : list<'T>, start:int, count:int) : list<'T> {
-  mut result = new list<'T>()
+  mut result : list<'T> = []
   mut numToExtract = count
-  if count == 0 {
+  if (count == 0) {
     return result
   }
   if count < 0 {
@@ -57,5 +62,26 @@ export method extract(haystack : list<'T>, start:int, count:int) : list<'T> {
   for i = start upto start+count {
     result.push(haystack[i])
   }
+  return result
+}
+
+export method tokenizeByWhiteSpace(haystackIn : str) : list<str> {
+  let haystack = haystackIn.trim()
+  let result : list<str> = []
+  mut curAccum = ""
+  mut inWhiteSpace = false
+  for i = 0 upto haystack.length {
+    let curChar = haystack.at(i)
+    if (curChar == " ") {
+      inWhiteSpace = true
+    }else{
+      if (inWhiteSpace) {
+        result.push(curAccum)
+        curAccum = ""
+      }
+    }
+    curAccum = curAccum + curChar
+  }
+  result.push(curAccum)
   return result
 }
