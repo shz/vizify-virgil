@@ -62,8 +62,8 @@ export method join(strset : list<str>, delim : str) : str {
 # The extract(startIndex, count) method returns a list containing the selected elements from a given list.
 # If the count is 0, the result is an empty list.
 # If the count is -1, the semantics are "return the entire sublist starting from given start index to the END OF THE LIST.
-export method extract(haystack : list<'T>, start:int, count:int) : list<'T> {
-  mut result : list<'T> = []
+export method extract(haystack : list<str>, start:int, count:int) : list<str> {
+  mut result : list<str> = []
   mut numToExtract = count
   if (count == 0) {
     return result
