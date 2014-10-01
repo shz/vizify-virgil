@@ -1,54 +1,58 @@
 import math
 
 struct PolyEngine {
-  f : func<float,float> = null
-  df : func<float,float> = null
+  c : float  = 0
+  b : float = 0
+  a : float = 0
+}
+method f(p : PolyEngine, x : float) : float {
+  return x * (p.c + x * (p.b + x * p.a))
+}
+method df(p : PolyEngine, x : float) : float {
+  return p.c + x * (2 * p.b + 3 * p.a * x)
 }
 
 export struct CubicBezierEngine {
-  f : func<float,float> = null
+  x : PolyEngine = null
+  y : PolyEngine = null
 }
+export method f(cb : CubicBezierEngine, n : float) : float {
+  mut v = n
 
-export method at (engine:CubicBezierEngine, t:float) : float {
+  for i = 0 upto 5 {
+    let z = cb.x.f(v) - n
+
+    # // Finish if we're close enough
+    if (z.abs() < 0.001) {
+      break
+    }
+
+    v = v - z / cb.x.df(v)
+  }
+  return cb.y.f(v)
+}
+export method at(engine:CubicBezierEngine, t:float) : float {
   return engine.f(t)
 }
 
 function poly(n1:float, n2:float) : PolyEngine {
-  let c = 3 * n1
-  let b = 3 * (n2 - n1) - c
-  let a = 1 - c - b
-
+  let cc = 3 * n1
+  let bb = 3 * (n2 - n1) - cc
+  let aa = 1 - cc - bb
   return new PolyEngine({
-    f = lambda(x:float):float { return x * (c + x * (b + x * a)) }
-    df = lambda(x:float):float { return c + x * (2 * b + 3 * a * x) }
+    a = aa
+    b = bb
+    c = cc
   })
 }
 
 
 export function generateCubicBezierEngine(x1:float, y1:float, x2:float, y2:float) : CubicBezierEngine {
-  
-  # Bezier polynomials
-  let x = poly(x1, x2)
-  let y = poly(y1, y2)
-
   let result = new CubicBezierEngine()
 
-  # Newton's method
-  result.f = lambda(n:float):float {
-    mut v = n
-
-    for i = 0 upto 5 {
-      let z = x.f(v) - n
-
-      # // Finish if we're close enough
-      if (z.abs() < 0.001) {
-        break
-      }
-
-      v = v - z / x.df(v)
-    }
-    return y.f(v)
-  }
+  # Bezier polynomials
+  result.x = poly(x1, x2)
+  result.y = poly(y1, y2)
 
   return result
 }
