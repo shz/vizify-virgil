@@ -36,7 +36,7 @@ export extern vizify {
 
   method setClipRect(c : Canvas, x:float, y:float, w:float, h:float)
   method clearClipRect(c : Canvas)
-  method startClip(c : Canvas, x : int, y : int, w : int, h : int)
+  method startClip(c : Canvas, x:float, y:float, w:float, h:float)
   method endClip(c : Canvas)
 
   method save(c : Canvas)
