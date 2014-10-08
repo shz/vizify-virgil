@@ -4,6 +4,10 @@ export extern {
   function animTreeRecordPush(name:str, v:Config)
   function animTreeRecordDrawStart(v:RenderContext<'T>)
   function animTreeRecordDrawEnd(v:RenderContext<'T>)
+
+  function animTreeStartFrame(ms:int)
+  function animTreeEndFrame
+
   function animTreeStartTrack(idx:int)
   function animTreeEndTrack(idx:int)
 }
