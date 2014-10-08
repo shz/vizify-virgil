@@ -2,6 +2,7 @@ import env
 import clock
 import canvas
 
+import animTreeDiag
 
 export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderContext<'T> {
   let root = rc.fork()
@@ -12,6 +13,7 @@ export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderCo
       ctx.setGlobalAlpha(1f * clock.fromEnd / outDur)
     }
   })
+  animTreeRecordPush("fade", root.config)
   return root
 }
 
@@ -19,6 +21,7 @@ export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderCo
 export method delay(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
   let root = rc.fork()
   root.config.start = amount
+  animTreeRecordPush("delay", root.config)
   return root
 }
 
@@ -26,11 +29,19 @@ export method runFor(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
   let root = rc.fork()
   root.config.duration = amount
   root.config.end = -1
+  animTreeRecordPush("runFor", root.config)
+  return root
+}
+
+export method runUntil(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
+  let root = rc.fork()
+  root.config.start = 0
+  root.config.end = amount
+  animTreeRecordPush("runUntil", root.config)
   return root
 }
 
 export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
-
 
   # Sanity check on duration
   if ( (rc.config.end > 0) && (rc.config.duration > -1) ) {
@@ -41,8 +52,11 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
   let fromStart = rc.clock.fromStart - rc.config.start
   let fromEnd = (rc.config.duration < 0) ? (rc.clock.fromEnd - rc.config.end) : (rc.config.start + rc.config.duration - rc.clock.fromStart)
 
+  animTreeRecordDrawStart(rc)
+
   # Skip if we don't need to be drawn right now
   if ((fromStart < 0) || (fromEnd < 0)) {
+    animTreeRecordDrawEnd(rc)
     return void
   }
 
@@ -65,4 +79,6 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
 
   # Unwind the operation stack
   rc.c.restore()
+
+  animTreeRecordDrawEnd(rc)
 }
