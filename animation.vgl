@@ -83,3 +83,9 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
 
   animTreeRecordDrawEnd(rc)
 }
+
+export method drawNamedGroup(rc : RenderContext<'T>, name: str, f : func<RenderContext<'T>, void>) {
+  animTreeDeclareDrawGroup(name)
+  rc.draw(f)
+}
+  
