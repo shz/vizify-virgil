@@ -4,6 +4,7 @@ import canvas
 
 import animTreeDiag
 
+
 export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderContext<'T> {
   let root = rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
@@ -16,7 +17,6 @@ export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderCo
   animTreeRecordPush("fade", root.config)
   return root
 }
-
 
 export method delay(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
   let root = rc.fork()
@@ -60,20 +60,21 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
     return void
   }
 
-  # Apply the operation stack
-  rc.c.save()
-  for i = 0 upto rc.config.operations.length {
-    rc.config.operations[i](rc.c, rc.clock)
-  }
-
   # Create a new, time-adjust render context for the actual call
-  let root = rc.fork()
+ let root = rc.fork()
   root.clock.fromStart = fromStart
   root.clock.fromEnd = fromEnd
   root.clock.percent = 1f * fromStart / (fromStart + fromEnd)
   root.config.duration = -1
   root.config.end = 0
   root.config.start = 0
+
+  # Apply the operation stack
+  root.c.save()
+  for i = 0 upto root.config.operations.length {
+    root.config.operations[i](root.c, root.clock)
+  }
+
   root.config.operations = new list<func<Canvas, Clock, void>>()
   f(root)
 
