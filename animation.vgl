@@ -53,19 +53,37 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
   }
 
   # Do some timing calculation
-  let fromStart = rc.clock.fromStart - rc.config.start
-  let fromEnd = (rc.config.duration < 0) ? (rc.clock.fromEnd - rc.config.end) : (rc.config.start + rc.config.duration - rc.clock.fromStart)
+  mut fromStart = rc.clock.fromStart - rc.config.start
+  mut fromEnd = (rc.config.duration < 0) ? (rc.clock.fromEnd - rc.config.end) : (rc.config.start + rc.config.duration - rc.clock.fromStart)
 
   animTreeRecordDrawStart(rc)
 
   # Skip if we don't need to be drawn right now
   if ((fromStart < 0) || (fromEnd < 0)) {
-    animTreeRecordDrawEnd(rc)
-    return void
+    if (animTreeInRecordingMode()) {
+      # ARTIFICIAL CLOCK MOVEMENT TO FORCE ENTRY INTO THIS SUBSCENE FOR RECORDING BENEFIT
+      if (fromStart < 0) {
+        if (rc.config.duration > 0) {
+          ### vvvvv IT IS NOT CLEAR THAT THIS IS NEEDED!!!!
+          # Adjust the clock and config to simulate future time
+          rc.clock.fromEnd = rc.config.duration
+          rc.clock.fromStart = 0
+          rc.clock.percent = 0
+          rc.config.duration = -1
+          rc.config.end = 0
+          ### ^^^^^ IT IS NOT CLEAR THAT THIS IS NEEDED!!!!
+        }
+        fromEnd = fromEnd + fromStart
+        fromStart = 0
+      } 
+    }else{
+      animTreeRecordDrawEnd(rc)
+      return void
+    }   
   }
 
   # Create a new, time-adjust render context for the actual call
- let root = rc.fork()
+  let root = rc.fork()
   root.clock.fromStart = fromStart
   root.clock.fromEnd = fromEnd
   root.clock.percent = 1f * fromStart / (fromStart + fromEnd)
