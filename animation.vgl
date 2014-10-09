@@ -3,6 +3,9 @@ import clock
 import canvas
 import easing
 
+import animTreeDiag
+
+
 export struct Animation<'T> {
   rc : RenderContext<'T> = null
   i : func<int, float> = null
@@ -15,7 +18,6 @@ export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : R
     let v = a.i(clock.fromStart) - (1 - a.o(clock.fromEnd))
     action(root.c, v)
   })
-  animTreeRecordPush("fade " + (inDur*1f).format(0) + "," + (outDur*1f).format(0), root.config)
   return root
 }
 
@@ -33,6 +35,7 @@ export method tween(renderc : RenderContext<'T>,
 # Utility methods for doing symmetric tweens
 
 export method ease(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
+  animTreeRecordPush("ease " + (i*1f).format(0) + "," + (o*1f).format(0), rc.config)
   return rc.tween(ease(i), ease(o))
 }
 
@@ -81,6 +84,7 @@ export method until(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
   let root = rc.fork()
   root.config.duration = -1
   root.config.end = amount
+  animTreeRecordPush("until", root.config)
   return root
 }
 
@@ -98,7 +102,26 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
 
   # Skip if we don't need to be drawn right now
   if ((fromStart < 0) || (fromEnd < 0)) {
-    return void
+    if (animTreeInRecordingMode()) {
+      # ARTIFICIAL CLOCK MOVEMENT TO FORCE ENTRY INTO THIS SUBSCENE FOR RECORDING BENEFIT
+      if (fromStart < 0) {
+        if (rc.config.duration > 0) {
+          ### vvvvv IT IS NOT CLEAR THAT THIS IS NEEDED!!!!
+          # Adjust the clock and config to simulate future time
+          #rc.clock.fromEnd = rc.config.duration
+          #rc.clock.fromStart = 0
+          #rc.clock.percent = 0
+          #rc.config.duration = -1
+          #rc.config.end = 0
+          ### ^^^^^ IT IS NOT CLEAR THAT THIS IS NEEDED!!!!
+        }
+        fromEnd = fromEnd + fromStart
+        fromStart = 0
+      } 
+    }else{
+      animTreeRecordDrawEnd(rc)
+      return void
+    }
   }
 
   # Create a new, time-adjusted render context for the actual call
@@ -131,4 +154,3 @@ export method drawNamedGroup(rc : RenderContext<'T>, name: str, f : func<RenderC
   animTreeDeclareDrawGroup(name)
   rc.draw(f)
 }
-  
