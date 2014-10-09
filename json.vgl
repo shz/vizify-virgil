@@ -1,9 +1,5 @@
-#
-# Vizify platform definition.  All externed structs, functions, methods,
-# etc. must be defined by the host platform.
-#
 export extern vizify {
-  
+
   struct JSON {
     # This one externed property's datatype is probably incorrect, but no problem ...
     # its only purpose is to allow the virgil-resident caller to determine if the
@@ -17,6 +13,7 @@ export extern vizify {
   method asFloat(j : JSON) : float
   method asBool(j : JSON) : bool
   method asList(j : JSON) : list<JSON>
+  method isNull(j : JSON) : bool
   method get(j : JSON, key : str) : JSON
   method isNull(j : JSON) : bool
 
