@@ -25,7 +25,7 @@ export method tween(renderc : RenderContext<'T>,
                     inf : func<int, float>,
                     outf : func<int, float>) : Animation<'T> {
 
-  return new Animation({
+  return new Animation<'T> ({
     rc = renderc
     i = inf
     o = outf
@@ -35,13 +35,16 @@ export method tween(renderc : RenderContext<'T>,
 # Utility methods for doing symmetric tweens
 
 export method ease(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
-  animTreeRecordPush("ease " + (i*1f).format(0) + "," + (o*1f).format(0), rc.config)
+  animTreeRecordPush("hillshape " + (i*1f).format(0) + "," + (o*1f).format(0), rc.config)
   return rc.tween(ease(i), ease(o))
 }
 
 export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
+  animTreeRecordPush("hillshape " + (i*1f).format(0) + "," + (o*1f).format(0), rc.config)
   return rc.tween(linear(i), linear(o))
 }
+
+
 
 
 # Sample implementation of an animation method
@@ -55,6 +58,12 @@ export method fade(a : Animation<'T>) : RenderContext<'T> {
 export method translate(a : Animation<'T>, xMax : float, yMax : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.translate(v*xMax, v*yMax)
+  })
+}
+
+export method scale(a : Animation<'T>, xMax : float, yMax : float) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.scale(v*xMax, v*yMax)
   })
 }
 
