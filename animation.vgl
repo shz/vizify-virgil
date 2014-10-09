@@ -66,11 +66,11 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
         if (rc.config.duration > 0) {
           ### vvvvv IT IS NOT CLEAR THAT THIS IS NEEDED!!!!
           # Adjust the clock and config to simulate future time
-          rc.clock.fromEnd = rc.config.duration
-          rc.clock.fromStart = 0
-          rc.clock.percent = 0
-          rc.config.duration = -1
-          rc.config.end = 0
+          #rc.clock.fromEnd = rc.config.duration
+          #rc.clock.fromStart = 0
+          #rc.clock.percent = 0
+          #rc.config.duration = -1
+          #rc.config.end = 0
           ### ^^^^^ IT IS NOT CLEAR THAT THIS IS NEEDED!!!!
         }
         fromEnd = fromEnd + fromStart
