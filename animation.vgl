@@ -18,7 +18,7 @@ export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderCo
       ctx.setGlobalAlpha(1f * clock.fromEnd / outDur)
     }
   })
-  animTreeRecordPush("fade", root.config)
+  animTreeRecordPush("fade " + (inDur*1f).format(0) + "," + (outDur*1f).format(0), root.config)
   return root
 }
 
