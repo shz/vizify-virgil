@@ -1,4 +1,4 @@
-export function pi : float {
+export function vglPI : float {
   return 3.1415926535897932
 }
 

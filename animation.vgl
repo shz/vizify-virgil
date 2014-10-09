@@ -4,6 +4,10 @@ import canvas
 
 import animTreeDiag
 
+export extern {
+  function querySt(key : str, valDefault : str) : str
+  function consoleLog(val : str)
+}
 
 export method fade(rc : RenderContext<'T>, inDur : int, outDur : int) : RenderContext<'T> {
   let root = rc.fork()
