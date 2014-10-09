@@ -1,4 +1,5 @@
 import env
+import animation
 
 # Data definition
 
@@ -12,27 +13,10 @@ struct Data {
   ]
 }
 
-# Custom animators
-
-method fade(rc : RenderContext<Data>, i : int, o : int)
-: env.RenderContext<data> {
-  return rc.anim(lambda(c : Canvas, cl : Clock) {
-    c.globalAlpha = cl.percent
-  })
-}
-
-# Custom renderers
-
-method drawThingy(rc : RenderContext<Data>, x : int, y : int) {
-  rc.draw(lambda(c : Canvas, cl : Clock, d : Data) {
-
-  });
-}
-
 # Root renderer
 
 function render(rc : RenderContext<Data>) {
-  rc.fade(100, 100).drawThingy(10, 10)
+
 }
 
 # Entry point

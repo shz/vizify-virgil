@@ -46,9 +46,3 @@ export function interpolate(c1 : Color, c2 : Color, p : float) : Color {
     a = c1.a + p * (c2.a - c1.a)
   })
 }
-
-#Cross-platform Virgil does not incorporate anything having to do with CSS.
-#This conversion from a VzColor to a CSS string will move into JS-side-only code (Virgil JS runtime library).
-#export method toCss(c: Color) : str {
-#  return "rgba(" + (forceInt(c.r*255)).toStr() + "," + (forceInt(c.g*255)).toStr() + "," + (forceInt(c.b*255)).toStr() + "," + (c.a).toStr() + ")"
-#}

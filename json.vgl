@@ -1,9 +1,5 @@
-#
-# Vizify platform definition.  All externed structs, functions, methods,
-# etc. must be defined by the host platform.
-#
 export extern vizify {
-  
+
   struct JSON {
   }
 
@@ -12,6 +8,7 @@ export extern vizify {
   method asFloat(j : JSON) : float
   method asBool(j : JSON) : bool
   method asList(j : JSON) : list<JSON>
+  method isNull(j : JSON) : bool
   method get(j : JSON, key : str) : JSON
 
   function parseJSON(json : str) : JSON
