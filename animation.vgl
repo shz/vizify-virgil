@@ -12,7 +12,7 @@ export struct Animation<'T> {
 export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : RenderContext<'T> {
   let root = a.rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
-    let v = a.i(clock.fromStart) - a.o(clock.fromEnd)
+    let v = a.i(clock.fromStart) - (1 - a.o(clock.fromEnd))
     action(root.c, v)
   })
   animTreeRecordPush("fade " + (inDur*1f).format(0) + "," + (outDur*1f).format(0), root.config)
@@ -48,6 +48,19 @@ export method fade(a : Animation<'T>) : RenderContext<'T> {
     c.setGlobalAlpha(v)
   })
 }
+
+export method translate(a : Animation<'T>, xMax : float, yMax : float) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.translate(v*xMax, v*yMax)
+  })
+}
+
+
+
+
+
+
+
 
 export method delay(rc : RenderContext<'T>, amount : int) : RenderContext<'T> {
   let root = rc.fork()
@@ -98,9 +111,9 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
   root.config.start = 0
 
   # Apply the operation stack
-  rc.c.save()
-  for i = 0 upto rc.config.operations.length {
-    rc.config.operations[i](rc.c, rc.clock)
+  root.c.save()
+  for i = 0 upto root.config.operations.length {
+    root.config.operations[i](root.c, root.clock)
   }
 
   # Now that we've used the operations stack, wipe it so that child
