@@ -15,7 +15,6 @@ export extern vizify {
   method asList(j : JSON) : list<JSON>
   method isNull(j : JSON) : bool
   method get(j : JSON, key : str) : JSON
-  method isNull(j : JSON) : bool
 
   function parseJSON(json : str) : JSON
 }
