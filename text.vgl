@@ -151,7 +151,7 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
       while (true) {
         prevMax = max
         prevMin = min
-        let cur = (min + (max - min)/2f).round()
+        let cur = (min.asFloat() + (max - min).asFloat()/2f).round()
         let thisTest = chunks.extract(0, cur).join("").trim()
         let mwidth = c.measureTextWidth(thisTest)
         if (mwidth > width) {
@@ -196,7 +196,7 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
     # Adjust for text alignment
     mut xleft : int = 0
     if (settings.textAlign == "center") {
-      xleft = ((width - w) / 2).round()
+      xleft = ((width - w) / 2f).round()
     }
     else if (settings.textAlign == "right") {
       xleft = (width - w).round()
@@ -212,14 +212,14 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
 
   # Get metrics for this font/size
   # var m = metrics.get(font.family, font.style, settings.fontSize)
-  let lineHeightCalc = settings.fontSize * 1.07 * settings.lineHeight
+  let lineHeightCalc = settings.fontSize.asFloat() * 1.07 * settings.lineHeight.asFloat()
 
   # Adjust vertical offset to fit in space
   mut verticalOffsetCalc = 0
-  let contentHeightCalc = resultB.length * lineHeightCalc
+  let contentHeightCalc = resultB.length.asFloat() * lineHeightCalc
   if (contentHeightCalc < height) {
     if (settings.verticalAlign == "middle") {
-      verticalOffsetCalc = ((height / 2) - (contentHeightCalc / 2)).round()
+      verticalOffsetCalc = ((height / 2f) - (contentHeightCalc / 2f)).round()
     }
     else if (settings.verticalAlign == "bottom") {
       verticalOffsetCalc = height - contentHeightCalc
@@ -241,9 +241,9 @@ export method layoutParagraph(c : Canvas, text: str, fontname: str, width:float,
 
 export method fillFittedText(c : Canvas, spec: ParagraphLayoutSpec, x: float, y: float) {
   c.setFont(spec.fontname, spec.size)
-  mut yCur = y + spec.verticalOffset + (spec.size*0.7)
+  mut yCur = y + spec.verticalOffset + (spec.size.asFloat()*0.7)
   for i = 0 upto spec.lines.length {
-    c.fillText(spec.lines[i].text, (x + spec.lines[i].left), yCur)
+    c.fillText(spec.lines[i].text, (x + spec.lines[i].left.asFloat()), yCur)
     yCur = yCur + spec.lineHeight
   }
 }

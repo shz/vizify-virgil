@@ -11,18 +11,18 @@ export extern vizify {
 
 export function rgb(ir : int, ig : int, ib : int) : Color {
   let c = new Color({
-    r = ir/255.0
-    g = ig/255.0
-    b = ib/255.0
+    r = ir.asFloat() / 255.0
+    g = ig.asFloat() / 255.0
+    b = ib.asFloat() / 255.0
   })
   return c
 }
 
 export function rgba(ir : int, ig : int, ib : int, ia : float) : Color {
   let c = new Color({
-    r = ir/255.0
-    g = ig/255.0
-    b = ib/255.0
+    r = ir.asFloat() / 255.0
+    g = ig.asFloat() / 255.0
+    b = ib.asFloat() / 255.0
     a = ia
   })
   return c
