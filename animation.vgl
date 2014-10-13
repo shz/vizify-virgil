@@ -15,7 +15,7 @@ export struct Animation<'T> {
 export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : RenderContext<'T> {
   let root = a.rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
-    let v = a.i(clock.fromStart) - (1 - a.o(clock.fromEnd))
+    let v = a.i(clock.fromStart) - (1f - a.o(clock.fromEnd))
     action(root.c, v)
   })
   return root
@@ -137,7 +137,7 @@ export method draw(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
   let root = rc.fork()
   root.clock.fromStart = fromStart
   root.clock.fromEnd = fromEnd
-  root.clock.percent = 1f * fromStart / (fromStart + fromEnd)
+  root.clock.percent = fromStart.asFloat() / (fromStart + fromEnd).asFloat()
   root.config.duration = -1
   root.config.end = 0
   root.config.start = 0

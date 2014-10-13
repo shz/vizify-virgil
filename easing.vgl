@@ -13,13 +13,13 @@ method f(p : PolyEngine, x : float) : float {
 }
 
 method df(p : PolyEngine, x : float) : float {
-  return p.c + x * (2 * p.b + 3 * p.a * x)
+  return p.c + x * (2f * p.b + 3f * p.a * x)
 }
 
 function poly(n1:float, n2:float) : PolyEngine {
-  let cc = 3 * n1
-  let bb = 3 * (n2 - n1) - cc
-  let aa = 1 - cc - bb
+  let cc = 3f * n1
+  let bb = 3f * (n2 - n1) - cc
+  let aa = 1f - cc - bb
   return new PolyEngine({
     a = aa
     b = bb
@@ -33,9 +33,9 @@ export struct CubicBezierEngine {
 }
 export method at(cb : CubicBezierEngine, n : float) : float {
   if n < 0 {
-    return 0
+    return 0f
   } else if n > 1 {
-    return 1
+    return 1f
   }
 
   mut v = n
@@ -67,7 +67,7 @@ export function ease(d : int) : func<int, float> {
   let cb = cubicBezier(0.25, 0.1, 0.25, 1.0)
 
   return lambda(t : int) : float {
-    return cb.at(t / (d*1.0))
+    return cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -75,7 +75,7 @@ export function linear(d : int) : func<int, float> {
   let cb = cubicBezier(0f, 0f, 1f, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t / (d*1.0))
+    return cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -83,7 +83,7 @@ export function easeIn(d : int) : func<int, float> {
   let cb = cubicBezier(0.42, 0f, 1f, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t / (d*1.0))
+    return cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -91,7 +91,7 @@ export function easeOut(d : int) : func<int, float> {
   let cb = cubicBezier(0f, 0f, 0.58, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t / (d*1.0))
+    return cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -99,6 +99,6 @@ export function easeInOut(d : int) : func<int, float> {
   let cb = cubicBezier(0.42, 0f, 0.58, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t / (d*1.0))
+    return cb.at(t.asFloat() / d.asFloat())
   }
 }
