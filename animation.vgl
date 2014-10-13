@@ -35,12 +35,12 @@ export method tween(renderc : RenderContext<'T>,
 # Utility methods for doing symmetric tweens
 
 export method ease(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
-  animTreeRecordPush("hillshape " + (i*1f).format(0) + "," + (o*1f).format(0), rc.config)
+  animTreeRecordPush("hillshape " + (i.asFloat()).format(0) + "," + (o.asFloat()).format(0), rc.config)
   return rc.tween(ease(i), ease(o))
 }
 
 export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
-  animTreeRecordPush("hillshape " + (i*1f).format(0) + "," + (o*1f).format(0), rc.config)
+  animTreeRecordPush("hillshape " + (i.asFloat()).format(0) + "," + (o.asFloat()).format(0), rc.config)
   return rc.tween(linear(i), linear(o))
 }
 
