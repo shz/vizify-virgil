@@ -48,6 +48,12 @@ export method fade(a : Animation<'T>) : RenderContext<'T> {
   })
 }
 
+export method alphaFromTo(a : Animation<'T>, from:float, to:float) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.setGlobalAlpha(from + (to-from)*v)
+  })
+}
+
 export method translate(a : Animation<'T>, xMax : float, yMax : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.translate(v*xMax, v*yMax)
