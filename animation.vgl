@@ -47,6 +47,11 @@ export method fade(a : Animation<'T>) : RenderContext<'T> {
     c.setGlobalAlpha(v)
   })
 }
+export method fadeOut(a : Animation<'T>) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.setGlobalAlpha(1f-v)
+  })
+}
 
 export method alphaFromTo(a : Animation<'T>, from:float, to:float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
