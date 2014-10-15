@@ -1,5 +1,6 @@
-mkdir -p js/output
-../virgil/bin/virgil-js -o js/output  animation.vgl
-../virgil/bin/virgil-js -o js/output  json.vgl
+#!/bin/sh
+
+../virgil/bin/virgil-cpp -o output/cpp animation.vgl json.vgl
+../virgil/bin/virgil-js -o output/js animation.vgl json.vgl
 
 
