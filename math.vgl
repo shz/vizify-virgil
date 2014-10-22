@@ -36,6 +36,10 @@ export function vglminInt(x1 : int, x2 : int) : int {
 }
 
 
+export method roundAsFloat(x : float) : float {
+  return x.round().asFloat()
+}
+
 
 export method vglabs(x : float) : float {
   return (x < 0) ? (0f-x) : x

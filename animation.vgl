@@ -10,12 +10,13 @@ export struct Animation<'T> {
   rc : RenderContext<'T> = null
   i : func<int, float> = null
   o : func<int, float> = null
+  durHoldAtZeroStart : int = 0
 }
 
 export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : RenderContext<'T> {
   let root = a.rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
-    let v = a.i(clock.fromStart) - (1f - a.o(clock.fromEnd))
+    let v = (clock.fromStart <= a.durHoldAtZeroStart) ? 0f : (a.i(clock.fromStart-a.durHoldAtZeroStart) - (1f - a.o(clock.fromEnd)))
     action(root.c, v)
   })
   return root
@@ -23,25 +24,35 @@ export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : R
 
 export method tween(renderc : RenderContext<'T>,
                     inf : func<int, float>,
-                    outf : func<int, float>) : Animation<'T> {
-
+                    outf : func<int, float>, durPreDelay : int) : Animation<'T> {
   return new Animation<'T> ({
     rc = renderc
     i = inf
     o = outf
+    durHoldAtZeroStart = durPreDelay
   })
 }
 
 # Utility methods for doing symmetric tweens
 
-export method ease(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
+
+export method hillshape(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
   animTreeRecordPush("hillshape " + (i.asFloat()).format(0) + "," + (o.asFloat()).format(0), rc.config)
-  return rc.tween(ease(i), ease(o))
+  return rc.tween(ease(i), ease(o), 0)
+}
+export method ease(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
+  # .ease is just a synonym for .hillshape
+  return rc.hillshape(i, o)
+}
+
+export method delayedHillshape(rc : RenderContext<'T>, i : int, o : int, durDelay : int) : Animation<'T> {
+  animTreeRecordPush("delayed hillshape " + (i.asFloat()).format(0) + "," + (o.asFloat()).format(0), rc.config)
+  return rc.tween(ease(i), ease(o), durDelay)
 }
 
 export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
   animTreeRecordPush("hillshape " + (i.asFloat()).format(0) + "," + (o.asFloat()).format(0), rc.config)
-  return rc.tween(linear(i), linear(o))
+  return rc.tween(linear(i), linear(o), 0)
 }
 
 
