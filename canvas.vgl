@@ -25,6 +25,8 @@ export extern vizify {
   method setLineDash(c : Canvas, dashspec : list<int>)
   method setFont (c:Canvas, fontFam:str, pxSize: int)
 
+  method setGlobalMaskMode(c:Canvas, mode:str)
+
   method getGlobalAlpha (c:Canvas) : float
 
   method fillRect(c : Canvas, x:float, y:float, w:float, h:float)

@@ -36,6 +36,10 @@ export method tween(renderc : RenderContext<'T>,
 export method hillshape(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
   return rc.tween(ease(i), ease(o), 0)
 }
+export method hillshapeWithCustomShape(rc : RenderContext<'T>, cb : CubicBezierEngine, i : int, o : int) : Animation<'T> {
+  return rc.tween(easeCustomShape(i,cb), easeCustomShape(o,cb), 0)
+}
+
 export method ease(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
   # .ease is just a synonym for .hillshape
   return rc.hillshape(i, o)
@@ -59,12 +63,28 @@ export method fade(a : Animation<'T>) : RenderContext<'T> {
     c.setGlobalAlpha(v)
   })
 }
+
+export method scaleFromTo(a : Animation<'T>, from:float, to:float) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.scale( (from + (to-from)*v), (from + (to-from)*v) )
+  })
+}
+
 export method shrinkAndFadeout(a : Animation<'T>) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.scale(1f-v,1f-v)
-    c.setGlobalAlpha(1f-v)
+    c.setGlobalAlpha((1f-v)**3)
   })
 }
+
+export method expandAndFade(a : Animation<'T>) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.scale(v,v)
+    c.setGlobalAlpha(v**2)
+  })
+}
+
+
 export method fadeOut(a : Animation<'T>) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.setGlobalAlpha(1f-v)
