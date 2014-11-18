@@ -23,7 +23,7 @@ function render(rc : RenderContext<Data>) {
 
 export function createViz(json : str) : CardConfig<Data> {
   return new CardConfig<Data> {
-    data = new Data()
+    data = new Data
     renderer = render
     duration = 100
   }
