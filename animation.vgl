@@ -77,6 +77,14 @@ export method shrinkAndFadeout(a : Animation<'T>) : RenderContext<'T> {
   })
 }
 
+export method shrinkAndFadeoutWithTranslation(a : Animation<'T>, dx : float, dy : float) : RenderContext<'T> {
+  return a.perform(lambda(c : Canvas, v : float) {
+    c.translate(v*dx, v*dy)
+    c.scale(1f-v,1f-v)
+    c.setGlobalAlpha((1f-v)**3)
+  })
+}
+
 export method expandAndFade(a : Animation<'T>) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.scale(v,v)
