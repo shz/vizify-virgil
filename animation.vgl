@@ -3,17 +3,25 @@ import clock
 import canvas
 import easing
 
+#
+# An Animation object specifies the dynamic motion of a single floating-point number
+# as it travels from 0f to 1f, holds at 1f, and then travels from 1f back to 0f,
+# over the duration of a RenderContext's clock timespan.
+#
+# The "i" and "o" functions determine the exact duration and shape of the 0f->1f and 1f->0f dynamics.
+#
+# The methods on this object allow the use of that floating-point number to 
+# apply some geometric or appearance-level transformation to a subsequently specified
+# set of 2D primitives.
+#
+# Animation objects are created by invoking the RenderContext#tween method.
+#
 export struct Animation<'T> {
   rc : RenderContext<'T> = null
   i : func<int, float> = null
   o : func<int, float> = null
-  durHoldAtZeroStart : int = 0
 }
 
-#
-# Creates a new tweened animation on the render context, using the
-# specified in and out animations.  Returns an animation object.
-#
 export method tween(rc1 : RenderContext<'T>, i1 : func<int, float>, o1 : func<int, float>) {
   return new Animation<'T> {
     rc = rc1
@@ -25,11 +33,14 @@ export method tween(rc1 : RenderContext<'T>, i1 : func<int, float>, o1 : func<in
 #
 # Creates a tweening function suitable for passing to the RenderContext::tween method,
 # by manipulating a given tweening function to implement a hold at the start
-# of the time period.
-# If the result is passed as the "i1" param to tween(), then the hold-at-zero
+# of the timespan.
+#
+# If the result of hold() is passed as the "i1" param to tween(), then the hold-at-zero
 # will occur at the start of the timespan.
-# If the result is passed as the "o1" param, then the hold-at-zero
+#
+# If the result of hold() is passed as the "o1" param to tween(), then the hold-at-zero
 # will occur at the end of the timespan.
+#
 export function hold(dur : int, f : func<int, float>) : func<int, float> {
   return lambda(t : int) : float {
     if t <= dur {
@@ -39,7 +50,6 @@ export function hold(dur : int, f : func<int, float>) : func<int, float> {
     }
   }
 }
-
 
 
 export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : RenderContext<'T> {
@@ -78,6 +88,7 @@ export method translate(a : Animation<'T>, xMax : float, yMax : float) : RenderC
   })
 }
 
+# Rotates 
 export method rotate(a : Animation<'T>, angleMax : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.rotate(v*angleMax)
@@ -89,20 +100,6 @@ export method rotate(a : Animation<'T>, angleMax : float) : RenderContext<'T> {
 export method scaleFrom(a : Animation<'T>, xmin : float, ymin : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.scale(xmin + (v * (1f - xmin)), ymin + (v * (1f - ymin)))
-  })
-}
-
-# Scales X across given from/to range
-export method scaleX(a : Animation<'T>, from:float, to:float) : RenderContext<'T> {
-  return a.perform(lambda(c : Canvas, v : float) {
-    c.scale( (from + (to-from)*v), 1f )
-  })
-}
-
-# Scales Y across given from/to range
-export method scaleY(a : Animation<'T>, from:float, to:float) : RenderContext<'T> {
-  return a.perform(lambda(c : Canvas, v : float) {
-    c.scale( 1f, (from + (to-from)*v) )
   })
 }
 
