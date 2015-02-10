@@ -1,5 +1,10 @@
 import canvas
 
+# Convenience wrapper around Canvas::fillText
+# This convenience supports left/center/right alignment.
+# If aligntype=="L", the x,y point specifies the leftmost point in the rendering.
+# If aligntype=="R", the x,y point specifies the rightmost point in the rendering.
+# If aligntype=="C", the x,y point specifies the center point in the rendering.
 export method fillTextAligned(c : Canvas, text: str, x: float, y: float, aligntype: str) {
   let wid = c.measureTextWidth(text)
   mut theX = x
@@ -12,6 +17,8 @@ export method fillTextAligned(c : Canvas, text: str, x: float, y: float, alignty
   c.fillText(text, theX, y)
 }
 
+# Returns the given input string after dropping all white space at the start of the string.
+# The only whitespace supported at this time is the space character.
 export method trimStart(s:str) : str {
   mut result = ""
   mut boolStillTrimming = true
@@ -28,6 +35,8 @@ export method trimStart(s:str) : str {
   return result
 }
 
+# Returns the given input string after dropping all white space at the end of the string.
+# The only whitespace supported at this time is the space character.
 export method trimEnd(s:str) : str {
   mut result = ""
   mut boolStillTrimming = true
@@ -45,10 +54,14 @@ export method trimEnd(s:str) : str {
   return result
 }
 
+# Returns the given input string after dropping all white space at both the start and the end of the string.
+# The only whitespace supported at this time is the space character.
 export method trim(s:str) : str {
   return s.trimStart().trimEnd()
 }
 
+# Returns the result of concatenating the given list of strings, using the given
+# delimiter as a separator between each pair in the concatenation.
 export method join(strset : list<str>, delim : str) : str {
   mut result = ""
   for i = 0 upto (strset.length-1) {
@@ -58,10 +71,9 @@ export method join(strset : list<str>, delim : str) : str {
   return result
 }
 
-
 # The extract(startIndex, count) method returns a list containing the selected elements from a given list.
 # If the count is 0, the result is an empty list.
-# If the count is -1, the semantics are "return the entire sublist starting from given start index to the END OF THE LIST.
+# If the count is -1, the semantics are "return the entire sublist starting from given start index to the END OF THE LIST."
 export method extract(haystack : list<str>, start:int, count:int) : list<str> {
   mut result : list<str> = []
   mut numToExtract = count

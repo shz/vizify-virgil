@@ -2,14 +2,6 @@ import color
 
 export extern vizify {
 
-  struct TextLayoutLineSpecifier {
-  }
-
-  struct TextLayoutSpecifier {
-    lines: list<TextLayoutLineSpecifier>
-    lineHeight: float
-  }
-
   struct Canvas {
     width : int
     height : int
