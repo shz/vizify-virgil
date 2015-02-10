@@ -76,7 +76,7 @@ export function ease(d : int) : func<int, float> {
   }
 }
 
-export function easeCustomShape(d : int, cb : CubicBezierEngine) : func<int, float> {
+export function easeCustom(d : int, cb : CubicBezierEngine) : func<int, float> {
   return lambda(t : int) : float {
     return cb.at(t.asFloat() / d.asFloat())
   }
@@ -112,4 +112,8 @@ export function easeInOut(d : int) : func<int, float> {
   return lambda(t : int) : float {
     return cb.at(t.asFloat() / d.asFloat())
   }
+}
+
+export function none(d : int) : float {
+  return 1f
 }

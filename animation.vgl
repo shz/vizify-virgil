@@ -10,6 +10,38 @@ export struct Animation<'T> {
   durHoldAtZeroStart : int = 0
 }
 
+#
+# Creates a new tweened animation on the render context, using the
+# specified in and out animations.  Returns an animation object.
+#
+export method tween(rc1 : RenderContext<'T>, i1 : func<int, float>, o1 : func<int, float>) {
+  return new Animation<'T> {
+    rc = rc1
+    i = i1
+    o = o1
+  }
+}
+
+#
+# Creates a tweening function suitable for passing to the RenderContext::tween method,
+# by manipulating a given tweening function to implement a hold at the start
+# of the time period.
+# If the result is passed as the "i1" param to tween(), then the hold-at-zero
+# will occur at the start of the timespan.
+# If the result is passed as the "o1" param, then the hold-at-zero
+# will occur at the end of the timespan.
+export function hold(dur : int, f : func<int, float>) : func<int, float> {
+  return lambda(t : int) : float {
+    if t <= dur {
+      return 0f
+    } else {
+      return f(t - dur)
+    }
+  }
+}
+
+
+
 export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : RenderContext<'T> {
   let root = a.rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
@@ -17,17 +49,6 @@ export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : R
     action(root.c, v)
   })
   return root
-}
-
-export method tween(renderc : RenderContext<'T>,
-                    inf : func<int, float>,
-                    outf : func<int, float>) : Animation<'T> {
-  return new Animation<'T> {
-    rc = renderc
-    i = inf
-    o = outf
-    durHoldAtZeroStart = 0
-  }
 }
 
 export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
@@ -63,11 +84,11 @@ export method rotate(a : Animation<'T>, angleMax : float) : RenderContext<'T> {
   })
 }
 
-# Scales X from 0 to xMax
-# Scales Y from 0 to yMax
-export method scale(a : Animation<'T>, xMax : float, yMax : float) : RenderContext<'T> {
+# Scales X from <given> to 1
+# Scales Y from <given> to 1
+export method scaleFrom(a : Animation<'T>, xmin : float, ymin : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
-    c.scale(v*xMax, v*yMax)
+    c.scale(xmin + (v * (1f - xmin)), ymin + (v * (1f - ymin)))
   })
 }
 
@@ -152,5 +173,4 @@ export method apply(rc : RenderContext<'T>, f : func<RenderContext<'T>, void>) {
 
   # Undo the effects of the operation stack
   rc.c.restore()
-
 }
