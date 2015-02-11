@@ -2,12 +2,18 @@ import color
 
 export extern vizify {
 
+  # The Canvas object is mostly opaque, with its only two public properties providing size information.
+  # Size may change during the lifetime of the movie; see the "Layout" topic for more information
+  # on runtime dynamic size adaptation.
   struct Canvas {
     width : int
     height : int
   }
 
-  # Attributes
+  #
+  # ATTRIBUTES: "sticky" states that affect the appearance
+  # of generated primitives.
+  #
   method setFillStyle (c:Canvas, val:Color)
   method setStrokeStyle (c:Canvas, val:Color)
   method setGlobalAlpha (c:Canvas, val:float)
@@ -17,29 +23,29 @@ export extern vizify {
   method setGlobalMaskMode(c:Canvas, mode:str)
   method getGlobalAlpha (c:Canvas) : float
 
-  # 2D Primitives
-  method fillRect(c : Canvas, x:float, y:float, w:float, h:float)
+  method translate(c : Canvas, x:float, y:float)
+  method scale(c : Canvas, x:float, y:float)
+  method rotate(c : Canvas, angleInRadians:float)
+
+  # The clip-rect/region attributes are NOT stackable.
+  method startClip(c : Canvas, x:float, y:float, w:float, h:float)
+  method endClip(c : Canvas)
+
+  method save(c : Canvas)
+  method restore(c : Canvas)
+
   #
+  # 2-D PRIMITIVES
+  #
+  method fillRect(c : Canvas, x:float, y:float, w:float, h:float)
+
   method beginPath(c : Canvas)
   method closePath(c : Canvas)
   method stroke(c : Canvas)
   method fill(c : Canvas)
-  #
-  method setClipRect(c : Canvas, x:float, y:float, w:float, h:float)
-  method clearClipRect(c : Canvas)
-  method startClip(c : Canvas, x:float, y:float, w:float, h:float)
-  method endClip(c : Canvas)
-  #
-  method save(c : Canvas)
-  method restore(c : Canvas)
 
   method drawImage(c : Canvas, img : str, x : float, y : float)
   method drawImageSized(c : Canvas, img : str, x : float, y : float, w : float, h : float)
-  # method drawImageClipped(c : Canvas, img : str, sx : float, sy : float, dx : float, dy : float, dw : float, dh : float)
-
-  method translate(c : Canvas, x:float, y:float)
-  method scale(c : Canvas, x:float, y:float)
-  method rotate(c : Canvas, angleInRadians:float)
 
   method arc(c : Canvas, xOrb:float, yOrb:float, radius:float, angleStart:float, angleEnd:float, counterClockwise:bool)
   method rect(c : Canvas, x : float, y : float, w : float, h : float)

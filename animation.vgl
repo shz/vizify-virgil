@@ -1,7 +1,7 @@
 import env
 import clock
 import canvas
-import easing
+import tweening
 
 #
 # An Animation object specifies the dynamic motion of a single floating-point number
@@ -22,7 +22,7 @@ export struct Animation<'T> {
   o : func<int, float> = null
 }
 
-export method tween(rc1 : RenderContext<'T>, i1 : func<int, float>, o1 : func<int, float>) {
+export method tween(rc1 : RenderContext<'T>, i1 : func<int, float>, o1 : func<int, float>) : Animation<'T> {
   return new Animation<'T> {
     rc = rc1
     i = i1
@@ -51,16 +51,25 @@ export function hold(dur : int, f : func<int, float>) : func<int, float> {
   }
 }
 
-
+# 
+# The Animation#perform method is never called directly by a viz application.
+# Rather, it is used to generate "animation methods": 
+# methods that use an incoming tween-generated floating-point number
+# to control an attribute in the canvas context.
+#
+# For examples of animation methods, see below.
+# 
 export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : RenderContext<'T> {
   let root = a.rc.fork()
   root.config.operations.push(lambda(ctx : Canvas, clock : Clock) {
-    let v = (clock.fromStart <= a.durHoldAtZeroStart) ? 0f : (a.i(clock.fromStart-a.durHoldAtZeroStart) - (1f - a.o(clock.fromEnd)))
+    let v = a.i(clock.fromStart) - (1f - a.o(clock.fromEnd))
     action(root.c, v)
   })
   return root
 }
 
+### THIS IS AN ODDITY IN THIS FILE.
+# What is this doing here, and is it even necessary?
 export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
   return rc.tween(linear(i), linear(o))
 }
@@ -88,15 +97,25 @@ export method translate(a : Animation<'T>, xMax : float, yMax : float) : RenderC
   })
 }
 
-# Rotates 
+#
+# Uses the incoming floating-point number to apply rotation to the current canvas context.
+# Interpolates the rotation from 0 degrees radian to angleMax degrees radian.
+# Examples:
+#  If the incoming float is 0f, no rotation will be applied.
+#  If the incoming float is 0.5f, the applied rotation will be angleMax/2f radians.
 export method rotate(a : Animation<'T>, angleMax : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.rotate(v*angleMax)
   })
 }
 
-# Scales X from <given> to 1
-# Scales Y from <given> to 1
+#
+# Uses the incoming floating-point number to apply both X and Y scale factor to the current canvas context.
+# Interpolates the X scale from xmin to 1f, and interpolates the Y scale from ymin to 1f.
+# Examples:
+#  If the incoming float is 0f, the applied X scale factor will be xmin.
+#  If the incoming float is 0.5f, the applied X scale factor will be (xmin+1f)/2f.
+#
 export method scaleFrom(a : Animation<'T>, xmin : float, ymin : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.scale(xmin + (v * (1f - xmin)), ymin + (v * (1f - ymin)))
