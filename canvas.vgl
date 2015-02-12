@@ -19,10 +19,9 @@ export extern vizify {
   method setStrokeStyle (c:Canvas, val:Color)
   method setGlobalAlpha (c:Canvas, val:float)
   method setLineWidth (c:Canvas, val:float)
-  method setLineDash(c : Canvas, dashspec : list<int>)
+  method setLineDash(c:Canvas, dashspec : list<int>)
   method setFont (c:Canvas, fontFam:str, pxSize: int)
 
-  # ?? Question: is this truly subject to the save/restore stack?  Research needed.
   # The mask mode can be used to restrict subsequent rendering actions to only
   # certain pixels on the canvas, based on whether that destination pixel is or isn't
   # already containing a color value.
@@ -30,6 +29,7 @@ export extern vizify {
   #   "normal" (default: no masking effect)
   #   "mask" (only the already-painted portion of the canvas will be writeable)
   #   "reverse-mask" (only the not-yet-painted portion of the canvas will be writeable)
+  # This attribute is also subject to the save/restore stack.
   method setGlobalMaskMode(c:Canvas, mode:str)
 
   #
@@ -41,13 +41,23 @@ export extern vizify {
   method scale(c : Canvas, x:float, y:float)
   method rotate(c : Canvas, angleInRadians:float)
 
+  # CLIP REGION -- 
+  # Initially, the clip region is the entire universe.
+  # To temporarily apply a clip rectangle to limit the impact of primitives to
+  # a given rectangular region:
+  # 1) Save the current attribute state.
+  # 2) Use startClip to specify the desired temporary region.
+  # 3) Generate the primitives that should be clipped thusly.
+  # 4) Restore the saved attribute state (the only way to disable the temporary clipping).
   #
-  # The clip-rect/region attributes are NOT subject to save/restore? 
-  # ( We are researching this. )
+  # RESEARCH:
+  # In nanovg, transforms *do* affect the interpretation of the clip rect.
+  # ??? In html5 canvas, ???? research needed ????
   #
   method startClip(c : Canvas, x:float, y:float, w:float, h:float)
-  method endClip(c : Canvas)
 
+  #
+  # ATTRIBUTE-STATE STACK CONTROL
   #
   # As mentioned above, there is a set of attributes that is 
   # subject to the save/restore stack, allowing a module to make
