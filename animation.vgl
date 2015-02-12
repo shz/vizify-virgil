@@ -1,5 +1,4 @@
-import env
-import clock
+import core
 import canvas
 import tweening
 
@@ -70,9 +69,9 @@ export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : R
 
 ### THIS IS AN ODDITY IN THIS FILE.
 # What is this doing here, and is it even necessary?
-export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
-  return rc.tween(linear(i), linear(o))
-}
+#export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
+#  return rc.tween(linear(i), linear(o))
+#}
 
 
 

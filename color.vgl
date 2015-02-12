@@ -28,16 +28,6 @@ export function rgba(ir : int, ig : int, ib : int, ia : float) : Color {
   return c
 }
 
-export function blackish(ia : float) : Color {
-  let c = new Color {
-    r = 0f
-    g = 0f
-    b = 0f
-    a = ia
-  }
-  return c
-}
-
 export function interpolate(c1 : Color, c2 : Color, p : float) : Color {
   return new Color {
     r = c1.r + p * (c2.r - c1.r)

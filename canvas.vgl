@@ -1,10 +1,12 @@
 import color
 
 export extern vizify {
-
-  # The Canvas object is mostly opaque, with its only two public properties providing size information.
+  
+  #
+  # CANVAS OBJECT is mostly opaque, with its only two public properties providing size information.
   # Size may change during the lifetime of the movie; see the "Layout" topic for more information
   # on runtime dynamic size adaptation.
+  #
   struct Canvas {
     width : int
     height : int
@@ -41,8 +43,10 @@ export extern vizify {
   method scale(c : Canvas, x:float, y:float)
   method rotate(c : Canvas, angleInRadians:float)
 
-  # CLIP REGION -- 
-  # Initially, the clip region is the entire universe.
+  #
+  # CLIP REGION
+  #
+  # By default, there is no clip region; clipping is disabled.
   # To temporarily apply a clip rectangle to limit the impact of primitives to
   # a given rectangular region:
   # 1) Save the current attribute state.
@@ -50,9 +54,8 @@ export extern vizify {
   # 3) Generate the primitives that should be clipped thusly.
   # 4) Restore the saved attribute state (the only way to disable the temporary clipping).
   #
-  # RESEARCH:
-  # In nanovg, transforms *do* affect the interpretation of the clip rect.
-  # ??? In html5 canvas, ???? research needed ????
+  # Keep in mind: your specification of the clip region is subjected to
+  # the current 2D transformation matrix.
   #
   method startClip(c : Canvas, x:float, y:float, w:float, h:float)
 
@@ -82,7 +85,7 @@ export extern vizify {
   # initiating construction of a "path":
   method beginPath(c : Canvas)
 
-  # You then accumulate a path via any number of calls to:
+  # You then accumulate a path via calls to any of these:
   method arc(c : Canvas, xOrb:float, yOrb:float, radius:float, angleStart:float, angleEnd:float, counterClockwise:bool)
   method rect(c : Canvas, x : float, y : float, w : float, h : float)
   method bezierCurveTo(c : Canvas, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float)
