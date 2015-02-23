@@ -139,10 +139,3 @@ export function easeCustom(d : int, cb : CubicBezierEngine) : func<int, float> {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
-
-# 
-# Use none() to generate a flat shape, returning 1f unconditionally.
-#
-export function none(d : int) : float {
-  return 1f
-}
