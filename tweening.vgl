@@ -93,7 +93,7 @@ export function cubicBezier(x1 : float, y1 : float, x2 : float, y2 : float) : Cu
 export function ease(d : int) : func<int, float> {
   let cb = cubicBezier(0.25, 0.1, 0.25, 1.0)
   return lambda(t : int) : float {
-    return cb.at(t.asFloat() / d.asFloat())
+    return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -101,7 +101,7 @@ export function linear(d : int) : func<int, float> {
   let cb = cubicBezier(0f, 0f, 1f, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t.asFloat() / d.asFloat())
+    return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -109,7 +109,7 @@ export function easeIn(d : int) : func<int, float> {
   let cb = cubicBezier(0.42, 0f, 1f, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t.asFloat() / d.asFloat())
+    return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -117,7 +117,7 @@ export function easeOut(d : int) : func<int, float> {
   let cb = cubicBezier(0f, 0f, 0.58, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t.asFloat() / d.asFloat())
+    return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -125,7 +125,7 @@ export function easeInOut(d : int) : func<int, float> {
   let cb = cubicBezier(0.42, 0f, 0.58, 1f)
 
   return lambda(t : int) : float {
-    return cb.at(t.asFloat() / d.asFloat())
+    return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
@@ -136,7 +136,7 @@ export function easeInOut(d : int) : func<int, float> {
 #
 export function easeCustom(d : int, cb : CubicBezierEngine) : func<int, float> {
   return lambda(t : int) : float {
-    return cb.at(t.asFloat() / d.asFloat())
+    return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
