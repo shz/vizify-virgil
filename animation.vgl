@@ -21,24 +21,48 @@ export struct Animation<'T> {
   o : func<int, float> = null
 }
 
-export method tween(rc1 : RenderContext<'T>, i1 : func<int, float>, o1 : func<int, float>) : Animation<'T> {
+
+#
+# RenderContext#tween is the sole technique for creating an Animation object.
+# Use the parameters to divide the render context's clock timespan into 3 portions
+# (0>1, hold at 1, 1>0) and to control the duration and shape of the 0>1 and 1>0 portions.
+#
+# Example: if you want the 0>1 portion to last 100ms and have a straight-line shape,
+# pass linear(100) as the shapeZeroToOne parameter.
+#
+# You can eliminate the start or end portions by sending null to the relevant shape parameter.
+#
+# Hint: use the hold() function to generate a shape that includes a delay.  For example,
+# if you want the start of the timespan to have this shape:
+#    1) Hold at 0 for 100ms
+#    2) Then do a linear rise to 1 for 250ms
+# then send this expression as the shapeZeroToOne:
+#    hold(100, linear(250))
+#
+function returnOne(d : int) : float {
+  return 1f
+}
+#
+export method tween(rc1 : RenderContext<'T>, shapeZeroToOne : func<int, float>, shapeOneToZero : func<int, float>) : Animation<'T> {
   return new Animation<'T> {
     rc = rc1
-    i = i1
-    o = o1
+    i = (shapeZeroToOne == null) ? returnOne : shapeZeroToOne
+    o = (shapeOneToZero == null) ? returnOne : shapeOneToZero
   }
 }
 
 #
 # Creates a tweening function suitable for passing to the RenderContext::tween method,
-# by manipulating a given tweening function to implement a hold at the start
-# of the timespan.
+# by manipulating a given tweening function to implement a hold-at-zero at one of the
+# sides of the timespan.
 #
-# If the result of hold() is passed as the "i1" param to tween(), then the hold-at-zero
+# If the result of hold() is passed as the "shapeZeroToOne" param to tween(), then the hold-at-zero
 # will occur at the start of the timespan.
 #
-# If the result of hold() is passed as the "o1" param to tween(), then the hold-at-zero
+# If the result of hold() is passed as the "shapeOneToZero" param to tween(), then the hold-at-zero
 # will occur at the end of the timespan.
+#
+# See example in the documentation for RenderContext#tween above.
 #
 export function hold(dur : int, f : func<int, float>) : func<int, float> {
   return lambda(t : int) : float {
@@ -67,16 +91,10 @@ export method perform(a : Animation<'T>, action : func<Canvas, float, void>) : R
   return root
 }
 
-### THIS IS AN ODDITY IN THIS FILE.
-# What is this doing here, and is it even necessary?
-#export method linear(rc : RenderContext<'T>, i : int, o : int) : Animation<'T> {
-#  return rc.tween(linear(i), linear(o))
-#}
 
 
 
-
-# Sample implementations of animation methods
+# SAMPLE IMPLEMENTATIONS OF ANIMATION METHODS
 
 export method fade(a : Animation<'T>) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
@@ -102,6 +120,7 @@ export method translate(a : Animation<'T>, xMax : float, yMax : float) : RenderC
 # Examples:
 #  If the incoming float is 0f, no rotation will be applied.
 #  If the incoming float is 0.5f, the applied rotation will be angleMax/2f radians.
+#
 export method rotate(a : Animation<'T>, angleMax : float) : RenderContext<'T> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.rotate(v*angleMax)
