@@ -1,13 +1,13 @@
 # This is a candidate for future movement into the core Virgil language
 # as a "global constant".
-export function pi : float {
+export function pi: float {
   return 3.1415926535897932
 }
 
 #
 # Floating-point and int flavors of max()/min()
 #
-export function maxf(x1 : float, x2 : float) : float {
+export function maxf(x1: float, x2: float) : float {
   if (x1 < x2) {
     return x2
   }else{
@@ -15,7 +15,7 @@ export function maxf(x1 : float, x2 : float) : float {
   }
 }
 
-export function minf(x1 : float, x2 : float) : float {
+export function minf(x1: float, x2: float) : float {
   if (x1 < x2) {
     return x1
   }else{
@@ -24,7 +24,7 @@ export function minf(x1 : float, x2 : float) : float {
 }
 
 
-export function maxi(x1 : int, x2 : int) : int {
+export function maxi(x1: int, x2: int) : int {
   if (x1 < x2) {
     return x2
   }else{
@@ -32,7 +32,7 @@ export function maxi(x1 : int, x2 : int) : int {
   }
 }
 
-export function mini(x1 : int, x2 : int) : int {
+export function mini(x1: int, x2: int) : int {
   if (x1 < x2) {
     return x1
   }else{
