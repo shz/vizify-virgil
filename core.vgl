@@ -23,6 +23,7 @@ export extern vizify {
     fromStart : int # ms from clock start
     fromEnd : int   # ms from clock end
     percent : float # % through clock
+    duration : int  # ms total duration
   }
 
   struct Config {

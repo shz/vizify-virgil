@@ -17,8 +17,8 @@ export extern vizify {
   # of generated primitives.
   # These are all subject to the save/restore stack.
   #
-  method setFillStyle (c:Canvas, val:Color)
-  method setStrokeStyle (c:Canvas, val:Color)
+  method setFillColor (c:Canvas, val:Color)
+  method setStrokeColor (c:Canvas, val:Color)
   method setGlobalAlpha (c:Canvas, val:float)
   method setLineWidth (c:Canvas, val:float)
   method setLineDash(c:Canvas, dashspec : list<int>)
@@ -33,6 +33,7 @@ export extern vizify {
   #   "reverse-mask" (only the not-yet-painted portion of the canvas will be writeable)
   # This attribute is also subject to the save/restore stack.
   method setGlobalMaskMode(c:Canvas, mode:str)
+  method clearGlobalMask(c:Canvas)   #NYI
 
   #
   # ACCUMULATIVE TRANSFORMATIONS -- each use of one of these methods
@@ -53,11 +54,15 @@ export extern vizify {
   # 2) Use startClip to specify the desired temporary region.
   # 3) Generate the primitives that should be clipped thusly.
   # 4) Restore the saved attribute state (the only way to disable the temporary clipping).
+  # 
+  # The above strategy will always work, but in the near future 
+  # it will be deprecated in favor of use of an explicit endClip().
   #
   # Keep in mind: your specification of the clip region is subjected to
   # the current 2D transformation matrix.
   #
   method startClip(c : Canvas, x:float, y:float, w:float, h:float)
+  method endClip(c : Canvas)
 
   #
   # ATTRIBUTE-STATE STACK CONTROL

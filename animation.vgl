@@ -90,10 +90,6 @@ export method perform(a : Animation<'T, 'L>, action : func<Canvas, float, void>)
   return root
 }
 
-export method linear(rc : RenderContext<'T, 'L>, i : int, o : int) : Animation<'T, 'L> {
-  return rc.tween(linear(i), linear(o))
-}
-
 
 
 
@@ -105,7 +101,7 @@ export method fade(a : Animation<'T, 'L>) : RenderContext<'T, 'L> {
   })
 }
 
-export method fadeFromTo(a : Animation<'T, 'L>, from:float, to:float) : RenderContext<'T, 'L> {
+export method alpha(a : Animation<'T, 'L>, from:float, to:float) : RenderContext<'T, 'L> {
   return a.perform(lambda(c : Canvas, v : float) {
     c.setGlobalAlpha(from + (to-from)*v)
   })
