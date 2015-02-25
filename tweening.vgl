@@ -7,21 +7,21 @@ import math
 # a CubicBezier engine.
 #
 # Of note is the exported function "cubicBezier", which you would
-# use to create a custom-shaped easing function for use in 
+# use to create a custom-shaped easing function for use in
 # constructing a tween.  See more about this technique in
 # commentary below.
 #
 struct PolyEngine {
-  c : float = 0f
-  b : float = 0f
-  a : float = 0f
+  c: float = 0f
+  b: float = 0f
+  a: float = 0f
 }
 
-method f(p : PolyEngine, x : float) : float {
+method f(p: PolyEngine, x: float) : float {
   return x * (p.c + x * (p.b + x * p.a))
 }
 
-method df(p : PolyEngine, x : float) : float {
+method df(p: PolyEngine, x: float) : float {
   return p.c + x * (2f * p.b + 3f * p.a * x)
 }
 
@@ -37,10 +37,10 @@ function poly(n1:float, n2:float) : PolyEngine {
 }
 
 export struct CubicBezierEngine {
-  x : PolyEngine = null
-  y : PolyEngine = null
+  x: PolyEngine = null
+  y: PolyEngine = null
 }
-export method at(cb : CubicBezierEngine, n : float) : float {
+export method at(cb: CubicBezierEngine, n: float) : float {
   if n < 0f {
     return 0f
   } else if n > 1f {
@@ -63,12 +63,12 @@ export method at(cb : CubicBezierEngine, n : float) : float {
 }
 
 #
-# To construct a custom-shaped easing function 
+# To construct a custom-shaped easing function
 # (for use in constructing a tween), invoke this
 # function and pass its return value into the
 # function "easeCustom" described later in this file.
 #
-export function cubicBezier(x1 : float, y1 : float, x2 : float, y2 : float) : CubicBezierEngine {
+export function cubicBezier(x1: float, y1: float, x2: float, y2: float) : CubicBezierEngine {
   let result = new CubicBezierEngine
 
   # Bezier polynomials
@@ -81,7 +81,7 @@ export function cubicBezier(x1 : float, y1 : float, x2 : float, y2 : float) : Cu
 #
 # EASING FUNCTIONS
 #
-# Each of the below functions allows specification of a 
+# Each of the below functions allows specification of a
 # time span (via the "d" parameter) and a shape that controls
 # how the range from 0 to 1 will be traversed during that
 # timespan.
@@ -90,41 +90,41 @@ export function cubicBezier(x1 : float, y1 : float, x2 : float, y2 : float) : Cu
 # You can preview the shape by typing the quartet of floating-point
 # numbers (being passed to cubicBezier) into the UI at cubic-bezier.com
 #
-export function ease(d : int) : func<int, float> {
+export function ease(d: int) : func<int, float> {
   let cb = cubicBezier(0.25, 0.1, 0.25, 1.0)
-  return lambda(t : int) : float {
+  return lambda(t: int) : float {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
-export function linear(d : int) : func<int, float> {
+export function linear(d: int) : func<int, float> {
   let cb = cubicBezier(0f, 0f, 1f, 1f)
 
-  return lambda(t : int) : float {
+  return lambda(t: int) : float {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
-export function easeIn(d : int) : func<int, float> {
+export function easeIn(d: int) : func<int, float> {
   let cb = cubicBezier(0.42, 0f, 1f, 1f)
 
-  return lambda(t : int) : float {
+  return lambda(t: int) : float {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
-export function easeOut(d : int) : func<int, float> {
+export function easeOut(d: int) : func<int, float> {
   let cb = cubicBezier(0f, 0f, 0.58, 1f)
 
-  return lambda(t : int) : float {
+  return lambda(t: int) : float {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
 
-export function easeInOut(d : int) : func<int, float> {
+export function easeInOut(d: int) : func<int, float> {
   let cb = cubicBezier(0.42, 0f, 0.58, 1f)
 
-  return lambda(t : int) : float {
+  return lambda(t: int) : float {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }
@@ -134,8 +134,8 @@ export function easeInOut(d : int) : func<int, float> {
 # custom cubic-bezier engine.  Best practice: create the CBE
 # at movie-init time and store in the Layout object.
 #
-export function easeCustom(d : int, cb : CubicBezierEngine) : func<int, float> {
-  return lambda(t : int) : float {
+export function easeCustom(d: int, cb: CubicBezierEngine) : func<int, float> {
+  return lambda(t: int) : float {
     return (d==0) ? 1f : cb.at(t.asFloat() / d.asFloat())
   }
 }

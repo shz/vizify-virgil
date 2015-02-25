@@ -8,8 +8,8 @@ export extern vizify {
   # on runtime dynamic size adaptation.
   #
   struct Canvas {
-    width : int
-    height : int
+    width: int
+    height: int
   }
 
   #
@@ -21,7 +21,7 @@ export extern vizify {
   method setStrokeColor (c:Canvas, val:Color)
   method setGlobalAlpha (c:Canvas, val:float)
   method setLineWidth (c:Canvas, val:float)
-  method setLineDash(c:Canvas, dashspec : list<int>)
+  method setLineDash(c:Canvas, dashspec: list<int>)
   method setFont (c:Canvas, fontFam:str, pxSize: int)
 
   # The mask mode can be used to restrict subsequent rendering actions to only
@@ -40,9 +40,9 @@ export extern vizify {
   # has an accumulative effect on the current 2D transformation matrix.
   # Note that the transf matrix is subject to save/restore stack.
   #
-  method translate(c : Canvas, x:float, y:float)
-  method scale(c : Canvas, x:float, y:float)
-  method rotate(c : Canvas, angleInRadians:float)
+  method translate(c: Canvas, x:float, y:float)
+  method scale(c: Canvas, x:float, y:float)
+  method rotate(c: Canvas, angleInRadians:float)
 
   #
   # CLIP REGION
@@ -61,8 +61,8 @@ export extern vizify {
   # Keep in mind: your specification of the clip region is subjected to
   # the current 2D transformation matrix.
   #
-  method startClip(c : Canvas, x:float, y:float, w:float, h:float)
-  method endClip(c : Canvas)
+  method startClip(c: Canvas, x:float, y:float, w:float, h:float)
+  method endClip(c: Canvas)
 
   #
   # ATTRIBUTE-STATE STACK CONTROL
@@ -72,8 +72,8 @@ export extern vizify {
   # "temporary" modifications to attributes followed by restoration
   # of the "original" attribute states.
   #
-  method save(c : Canvas)
-  method restore(c : Canvas)
+  method save(c: Canvas)
+  method restore(c: Canvas)
 
   #
   # 2-D PRIMITIVES
@@ -81,22 +81,22 @@ export extern vizify {
   # Most 2D primitives are generated via a multi-step process (see below).
   #
   # The only methods that generate a primitive via a single call are these:
-  method fillRect(c : Canvas, x:float, y:float, w:float, h:float)
-  method fillText(c : Canvas, text: str, x: float, y: float)
-  method drawImage(c : Canvas, img : str, x : float, y : float)
-  method drawImageSized(c : Canvas, img : str, x : float, y : float, w : float, h : float)
+  method fillRect(c: Canvas, x:float, y:float, w:float, h:float)
+  method fillText(c: Canvas, text: str, x: float, y: float)
+  method drawImage(c: Canvas, img: str, x: float, y: float)
+  method drawImageSized(c: Canvas, img: str, x: float, y: float, w: float, h: float)
 
   # To generate a primitive using the multi-step process, you start by
   # initiating construction of a "path":
-  method beginPath(c : Canvas)
+  method beginPath(c: Canvas)
 
   # You then accumulate a path via calls to any of these:
-  method arc(c : Canvas, xOrb:float, yOrb:float, radius:float, angleStart:float, angleEnd:float, counterClockwise:bool)
-  method rect(c : Canvas, x : float, y : float, w : float, h : float)
-  method bezierCurveTo(c : Canvas, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float)
-  method quadraticCurveTo(c : Canvas, x1:float, y1:float, x2:float, y2:float)
-  method moveTo(c : Canvas, x : float, y : float)
-  method lineTo(c : Canvas, x : float, y : float)
+  method arc(c: Canvas, xOrb:float, yOrb:float, radius:float, angleStart:float, angleEnd:float, counterClockwise:bool)
+  method rect(c: Canvas, x: float, y: float, w: float, h: float)
+  method bezierCurveTo(c: Canvas, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float)
+  method quadraticCurveTo(c: Canvas, x1:float, y1:float, x2:float, y2:float)
+  method moveTo(c: Canvas, x: float, y: float)
+  method lineTo(c: Canvas, x: float, y: float)
 
   # You then close the path and do both/either a stroke and/or fill action.
   # The appearance of a path stroke is primarily determined by the 
@@ -105,9 +105,9 @@ export extern vizify {
   #   fill-style attribute.
   # Of course, other attributes (e.g. the alpha, the mask) will 
   #   have an impact on appearance as well.
-  method closePath(c : Canvas)
-  method stroke(c : Canvas)
-  method fill(c : Canvas)
+  method closePath(c: Canvas)
+  method stroke(c: Canvas)
+  method fill(c: Canvas)
 
   #
   # COMPUTATION/INQUIRY
@@ -122,5 +122,5 @@ export extern vizify {
   
   # This method's computation is based on the current value of the
   # font attribute (both the font family and the pixel-based font size).
-  method measureTextWidth(c : Canvas, text: str) : float
+  method measureTextWidth(c: Canvas, text: str) : float
 }

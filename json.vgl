@@ -2,13 +2,13 @@ export extern vizify {
 
   struct JSON {}
 
-  method asStr(j : JSON) : str
-  method asInt(j : JSON) : int
-  method asFloat(j : JSON) : float
-  method asBool(j : JSON) : bool
-  method asList(j : JSON) : list<JSON>
-  method isNull(j : JSON) : bool
-  method get(j : JSON, key : str) : JSON
+  method asStr(j: JSON) : str
+  method asInt(j: JSON) : int
+  method asFloat(j: JSON) : float
+  method asBool(j: JSON) : bool
+  method asList(j: JSON) : list<JSON>
+  method isNull(j: JSON) : bool
+  method get(j: JSON, key: str) : JSON
 
-  function parseJSON(json : str) : JSON
+  function parseJSON(json: str) : JSON
 }
