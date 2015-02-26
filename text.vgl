@@ -1,5 +1,32 @@
 import canvas
 
+export extern vizify {
+
+  struct TextUtility {
+    canvas: Canvas
+  }
+
+}
+
+# 
+# TextUtility#measureTextWidth
+#
+# Provides the canvas' native measureTextWidth facility without having to
+# expose the entire Canvas API.  Uses save/restore to be non-destructive
+# to canvas state.
+# 
+export method measureTextWidth (tutil: TextUtility, text: str, fontname: str, pxFontSize: int) : float {
+  let c = tutil.canvas
+  c.save()
+  c.setFont(fontname, pxFontSize)
+  let retval = c.measureTextWidth(text)
+  c.restore()
+  return retval
+}
+
+#
+# Canvas#fillTextAligned
+#
 # Convenience wrapper around Canvas::fillText
 # This convenience supports left/center/right alignment.
 # If aligntype=="L", the x,y point specifies the leftmost point in the rendering.
@@ -136,7 +163,9 @@ export struct ParagraphLayoutSpec {
   h: int = 0
 }
 
-export method layoutParagraph(c: Canvas, text: str, fontname: str, width:float, height:float, settings: TextLayoutParagraphConfig) : ParagraphLayoutSpec {
+export method layoutParagraph(tutil: TextUtility, text: str, fontname: str, width:float, height:float, settings: TextLayoutParagraphConfig) : ParagraphLayoutSpec {
+
+  let c = tutil.canvas
 
   c.setFont(fontname, settings.fontSize)
   let fontnameToUse = fontname

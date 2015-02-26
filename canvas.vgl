@@ -62,7 +62,7 @@ export extern vizify {
   # the current 2D transformation matrix.
   #
   method startClip(c: Canvas, x:float, y:float, w:float, h:float)
-  method endClip(c: Canvas)
+  method endClip(c: Canvas)  #NYI
 
   #
   # ATTRIBUTE-STATE STACK CONTROL
