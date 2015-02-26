@@ -1,0 +1,26 @@
+import vizify.geometry
+import vizify.text
+
+import data
+
+export struct Layout {
+  radius = 0f
+  messageFormatted : ParagraphLayoutSpec = null
+  center: Point = null
+}
+
+export function layout(canvasSize: Size, tutil: TextUtility, data: Data) : Layout {
+
+  let config = new TextLayoutParagraphConfig { 
+    verticalAlign = "bottom"
+    textAlign = "center"
+    fontSize = 26
+    lineHeight = 1.32
+  }
+  
+  return new Layout {
+    messageFormatted = tutil.layoutParagraph("HELLO THERE!", "bold", canvasSize.width, canvasSize.height, config)
+    radius = 50f
+    center = new Point { x=30f }
+  }
+}
