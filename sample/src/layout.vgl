@@ -14,6 +14,7 @@ export function layout(canvasSize: Size, tutil: TextLayoutEngine, data: Data) : 
   let config = new ParagraphConfig { 
     verticalAlign = "bottom"
     textAlign = "center"
+    fontName = "bold"
     fontSize = 26
     lineHeight = 1.32
     width = canvasSize.width
@@ -21,7 +22,7 @@ export function layout(canvasSize: Size, tutil: TextLayoutEngine, data: Data) : 
   }
   
   return new Layout {
-    messageFormatted = tutil.paragraph("HELLO THERE!", "bold", config)
+    messageFormatted = tutil.paragraph("HELLO THERE!", config)
     radius = 50f
     center = new Point { x=30f }
   }

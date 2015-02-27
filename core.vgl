@@ -61,7 +61,7 @@ export extern vizify {
     duration: int
     renderer: func<RenderContext<'T, 'L>, void>
     images: list<str>
-    performLayout: func<Size, TextUtility, 'T, 'L>
+    performLayout: func<Size, TextLayoutEngine, 'T, 'L>
   }
 
 }
