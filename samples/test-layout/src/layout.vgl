@@ -5,21 +5,23 @@ import data
 
 export struct Layout {
   radius = 0f
-  messageFormatted : ParagraphLayoutSpec = null
+  messageFormatted : TextLayout = null
   center: Point = null
 }
 
-export function layout(canvasSize: Size, tutil: TextUtility, data: Data) : Layout {
+export function layout(canvasSize: Size, tutil: TextLayoutEngine, data: Data) : Layout {
 
-  let config = new TextLayoutParagraphConfig { 
+  let config = new ParagraphConfig { 
     verticalAlign = "bottom"
     textAlign = "center"
     fontSize = 26
     lineHeight = 1.32
+    width = canvasSize.width
+    height = canvasSize.height
   }
   
   return new Layout {
-    messageFormatted = tutil.layoutParagraph("HELLO THERE!", "bold", canvasSize.width, canvasSize.height, config)
+    messageFormatted = tutil.paragraph("HELLO THERE!", "bold", config)
     radius = 50f
     center = new Point { x=30f }
   }

@@ -1,21 +1,20 @@
 import canvas
+import string
 
 export extern vizify {
-
-  struct TextUtility {
+  struct TextLayoutEngine {
     canvas: Canvas
   }
-
 }
 
 # 
-# TextUtility#measureTextWidth
+# TextLayoutEngine#measureTextWidth
 #
 # Provides the canvas' native measureTextWidth facility without having to
 # expose the entire Canvas API.  Uses save/restore to be non-destructive
 # to canvas state.
 # 
-export method measureTextWidth (tutil: TextUtility, text: str, fontname: str, pxFontSize: int) : float {
+export method measureTextWidth (tutil: TextLayoutEngine, text: str, fontname: str, pxFontSize: int) : float {
   let c = tutil.canvas
   c.save()
   c.setFont(fontname, pxFontSize)
@@ -29,73 +28,20 @@ export method measureTextWidth (tutil: TextUtility, text: str, fontname: str, px
 #
 # Convenience wrapper around Canvas::fillText
 # This convenience supports left/center/right alignment.
-# If aligntype=="L", the x,y point specifies the leftmost point in the rendering.
-# If aligntype=="R", the x,y point specifies the rightmost point in the rendering.
-# If aligntype=="C", the x,y point specifies the center point in the rendering.
+# If aligntype=="left", the x,y point specifies the leftmost point in the rendering.
+# If aligntype=="right", the x,y point specifies the rightmost point in the rendering.
+# If aligntype=="center", the x,y point specifies the center point in the rendering.
+#
 export method fillTextAligned(c: Canvas, text: str, x: float, y: float, aligntype: str) {
   let wid = c.measureTextWidth(text)
   mut theX = x
-  if (aligntype == "R") {
+  if (aligntype == "right") {
     theX = x - wid
   }
-  if (aligntype == "C") {
+  if (aligntype == "center") {
     theX = x - wid/2f
   }
   c.fillText(text, theX, y)
-}
-
-# Returns the given input string after dropping all white space at the start of the string.
-# The only whitespace supported at this time is the space character.
-export method trimStart(s:str) : str {
-  mut result = ""
-  mut boolStillTrimming = true
-  for i = 0 upto s.length {
-    if (boolStillTrimming) {
-      if (s.at(i) != " ") {
-        result = result + s.at(i)
-        boolStillTrimming = false
-      }
-    }else{
-      result = result + s.at(i)
-    }
-  }
-  return result
-}
-
-# Returns the given input string after dropping all white space at the end of the string.
-# The only whitespace supported at this time is the space character.
-export method trimEnd(s:str) : str {
-  mut result = ""
-  mut boolStillTrimming = true
-  for i = (s.length - 1) downto -1 {
-    if (boolStillTrimming) {
-      if (s.at(i) != " ") {
-        result = s.at(i) + result
-        boolStillTrimming = false
-      }
-    }
-    else{
-      result = s.at(i) + result
-    }
-  }
-  return result
-}
-
-# Returns the given input string after dropping all white space at both the start and the end of the string.
-# The only whitespace supported at this time is the space character.
-export method trim(s:str) : str {
-  return s.trimStart().trimEnd()
-}
-
-# Returns the result of concatenating the given list of strings, using the given
-# delimiter as a separator between each pair in the concatenation.
-export method join(strset: list<str>, delim: str) : str {
-  mut result = ""
-  for i = 0 upto (strset.length-1) {
-    result = result + strset[i] + delim
-  }
-  result = result + strset[strset.length-1]
-  return result
 }
 
 # The extract(startIndex, count) method returns a list containing the selected elements from a given list.
@@ -138,38 +84,44 @@ export method tokenizeByWhiteSpace(haystackIn: str) : list<str> {
   return result
 }
 
-export struct LineLayoutSpec {
+export struct LineLayout {
   text: str = ""
   left: int = 0
   width: int = 0
 }
 
-export struct TextLayoutParagraphConfig {
+export struct ParagraphConfig {
+ width: float = 100f
+ height: float = 100f
+ fontName: str = "reg"
  fontSize: int = 10
  lineHeight: float = 1.32
  textAlign: str = "left"
  verticalAlign: str = "top"
 }
 
-export struct ParagraphLayoutSpec {
-  fontname: str = ""
+export struct TextLayout {
+  fontName: str = ""
   size: int = 0
-  # metrics: m,
   lineHeight: float = 0f
   contentHeight: float = 0f
   verticalOffset: float = 0f
-  lines: list<LineLayoutSpec> = []
+  lines: list<LineLayout> = []
   w: int = 0
   h: int = 0
 }
 
-export method layoutParagraph(tutil: TextUtility, text: str, fontname: str, width:float, height:float, settings: TextLayoutParagraphConfig) : ParagraphLayoutSpec {
-
+#
+# TextLayoutEngine#paragraph
+#
+export method paragraph (tutil: TextLayoutEngine, text: str, settings: ParagraphConfig) : TextLayout {
   let c = tutil.canvas
+  let width = settings.width
+  let height = settings.height
+  let fontname = settings.fontName
 
   c.setFont(fontname, settings.fontSize)
   let fontnameToUse = fontname
-  # settings = makeLayoutSettings(settings)
 
   # In the future we will support splitting the text into paragraphs based on \r\n delimiters.
   let linesIn: list<str> = [ text ]
@@ -223,7 +175,7 @@ export method layoutParagraph(tutil: TextUtility, text: str, fontname: str, widt
   # Calculate line metrics
   mut maxWidth = 0
 
-  let resultB: list<LineLayoutSpec> = []
+  let resultB: list<LineLayout> = []
 
   for idxLine = 0 upto resultA.length {
     let line = resultA[idxLine]
@@ -243,7 +195,7 @@ export method layoutParagraph(tutil: TextUtility, text: str, fontname: str, widt
       xleft = (width - w).round()
     }
 
-    resultB.push(new LineLayoutSpec {
+    resultB.push(new LineLayout {
       text = line
       left = xleft
       width = w.round()
@@ -267,8 +219,8 @@ export method layoutParagraph(tutil: TextUtility, text: str, fontname: str, widt
     }
   }
 
-  return new ParagraphLayoutSpec {
-    fontname = fontnameToUse
+  return new TextLayout {
+    fontName = fontnameToUse
     size = settings.fontSize
     contentHeight = contentHeightCalc
     lineHeight = lineHeightCalc
@@ -280,8 +232,8 @@ export method layoutParagraph(tutil: TextUtility, text: str, fontname: str, widt
 }
 
 
-export method fillFittedText(c: Canvas, spec: ParagraphLayoutSpec, x: float, y: float) {
-  c.setFont(spec.fontname, spec.size)
+export method fillFittedText(c: Canvas, spec: TextLayout, x: float, y: float) {
+  c.setFont(spec.fontName, spec.size)
   mut yCur = y + spec.verticalOffset + (spec.size.asFloat()*0.7)
   for i = 0 upto spec.lines.length {
     c.fillText(spec.lines[i].text, (x + spec.lines[i].left.asFloat()), yCur)
