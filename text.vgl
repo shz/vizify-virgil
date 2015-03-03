@@ -1,4 +1,3 @@
-import canvas
 import string
 
 export extern vizify {
@@ -7,13 +6,15 @@ export extern vizify {
 
   # A vizapp uses this to request a desired font
   struct Font {
-    name: str
-    family: str # "sans", "serif", "monospace"
-    weight: int
-    italic: bool  
-    condensed: bool
+    name: str  # Default null
+    family: str # ["sans", "serif", "monospace"] Default: "sans"
+    weight: int   # Default 300
+    italic: bool  # Default false
+    condensed: bool  # Default false
   }
 
+  # Don't construct objects of this type!
+  # Use getFontMetrics() to obtain a struct of this type.
   struct FontMetrics {
     size: int
     xheight: float 
@@ -22,29 +23,8 @@ export extern vizify {
     descender: float 
   }
 
-  method measureTextWidth (tutil: TextLayoutEngine, text: str, fontname: str, pxFontSize: int) : float
-  method getFontMetrics (tutil: TextLayoutEngine, fontname: str, pxFontSize: int) : FontMetrics
-}
-
-#
-# Canvas#fillTextAligned
-#
-# Convenience wrapper around Canvas::fillText
-# This convenience supports left/center/right alignment.
-# If aligntype=="left", the x,y point specifies the leftmost point in the rendering.
-# If aligntype=="right", the x,y point specifies the rightmost point in the rendering.
-# If aligntype=="center", the x,y point specifies the center point in the rendering.
-#
-export method fillTextAligned(c: Canvas, text: str, x: float, y: float, aligntype: str) {
-  let wid = c.measureTextWidth(text)
-  mut theX = x
-  if (aligntype == "right") {
-    theX = x - wid
-  }
-  if (aligntype == "center") {
-    theX = x - wid/2f
-  }
-  c.fillText(text, theX, y)
+  method measureTextWidth (tutil: TextLayoutEngine, text: str, font: Font, pxFontSize: int) : float
+  method getFontMetrics (tutil: TextLayoutEngine, font: Font, pxFontSize: int) : FontMetrics
 }
 
 #
@@ -103,7 +83,7 @@ export struct LineLayout {
 export struct ParagraphConfig {
  width: float = 100f
  height: float = 100f
- fontName: str = "reg"
+ font: Font = new Font
  fontSize: int = 10
  lineHeight: float = 1.32
  textAlign: str = "left"
@@ -111,7 +91,7 @@ export struct ParagraphConfig {
 }
 
 export struct TextLayout {
-  fontName: str = ""
+  font: Font = null
   size: int = 0
   contentHeight: float = 0f
   verticalOffset: float = 0f
@@ -126,7 +106,7 @@ export struct TextLayout {
 export method paragraph (tutil: TextLayoutEngine, text: str, settings: ParagraphConfig) : TextLayout {
   let width = settings.width
   let height = settings.height
-  let fontname = settings.fontName
+  let font = settings.font
 
   # In the future we will support splitting the text into paragraphs based on \r\n delimiters.
   let linesIn: list<str> = [ text ]
@@ -151,7 +131,7 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
         prevMin = min
         let cur = (min.asFloat() + (max - min).asFloat()/2f).round()
         let thisTest = chunks.extract(0, cur).join("").trim()
-        let mwidth = tutil.measureTextWidth(thisTest, fontname, settings.fontSize)
+        let mwidth = tutil.measureTextWidth(thisTest, font, settings.fontSize)
         if (mwidth > width) {
           max = cur
         } else {
@@ -190,7 +170,7 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
     let line = resultA[idxLine]
 
     # Determine line width
-    let w = tutil.measureTextWidth(line, fontname, settings.fontSize)
+    let w = tutil.measureTextWidth(line, font, settings.fontSize)
     if (w > maxWidth) {
       maxWidth = w
     }
@@ -225,22 +205,12 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
   }
 
   return new TextLayout {
-    fontName = fontname
+    font = font
     contentHeight = contentHeightCalc
     verticalOffset = verticalOffsetCalc.asFloat()
     size = settings.fontSize
     lines = resultB
     width = width.round()
     height = height.round()
-  }
-}
-
-
-export method drawTextLayout(c: Canvas, spec: TextLayout, x: float, y: float) {
-  c.setFont(spec.fontName, spec.size)
-  mut yCur = y + spec.verticalOffset + (spec.size.asFloat()*0.7)
-  for i = 0 upto spec.lines.length {
-    c.fillText(spec.lines[i].text, (x + spec.lines[i].left.asFloat()), yCur)
-    yCur = yCur + spec.lines[i].lineHeight
   }
 }
