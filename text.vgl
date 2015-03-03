@@ -3,24 +3,27 @@ import string
 
 export extern vizify {
   struct TextLayoutEngine {
-    canvas: Canvas
   }
-}
 
-# 
-# TextLayoutEngine#measureTextWidth
-#
-# Provides the canvas' native measureTextWidth facility without having to
-# expose the entire Canvas API.  Uses save/restore to be non-destructive
-# to canvas state.
-# 
-export method measureTextWidth (tutil: TextLayoutEngine, text: str, fontname: str, pxFontSize: int) : float {
-  let c = tutil.canvas
-  c.save()
-  c.setFont(fontname, pxFontSize)
-  let retval = c.measureTextWidth(text)
-  c.restore()
-  return retval
+  # A vizapp uses this to request a desired font
+  struct Font {
+    name: str
+    family: str # "sans", "serif", "monospace"
+    weight: int
+    italic: bool  
+    condensed: bool
+  }
+
+  struct FontMetrics {
+    size: int
+    xheight: float 
+    cap: float 
+    ascender: float 
+    descender: float 
+  }
+
+  method measureTextWidth (tutil: TextLayoutEngine, text: str, fontname: str, pxFontSize: int) : float
+  method getFontMetrics (tutil: TextLayoutEngine, fontname: str, pxFontSize: int) : FontMetrics
 }
 
 #
@@ -44,10 +47,13 @@ export method fillTextAligned(c: Canvas, text: str, x: float, y: float, aligntyp
   c.fillText(text, theX, y)
 }
 
+#
+# Internal use only!  Only for the paragraph-processing method shown below!
 # The extract(startIndex, count) method returns a list containing the selected elements from a given list.
 # If the count is 0, the result is an empty list.
 # If the count is -1, the semantics are "return the entire sublist starting from given start index to the END OF THE LIST."
-export method extract(haystack: list<str>, start:int, count:int) : list<str> {
+#
+method extract(haystack: list<str>, start:int, count:int) : list<str> {
   mut result: list<str> = []
   mut numToExtract = count
   if (count == 0) {
@@ -62,7 +68,10 @@ export method extract(haystack: list<str>, start:int, count:int) : list<str> {
   return result
 }
 
-export method tokenizeByWhiteSpace(haystackIn: str) : list<str> {
+#
+# Internal use only!  Only for the paragraph-processing method shown below!
+#
+method tokenizeByWhiteSpace(haystackIn: str) : list<str> {
   let haystack = haystackIn.trim()
   let result: list<str> = []
   mut curAccum = ""
@@ -88,6 +97,7 @@ export struct LineLayout {
   text: str = ""
   left: int = 0
   width: int = 0
+  lineHeight: float = 0f
 }
 
 export struct ParagraphConfig {
@@ -103,25 +113,20 @@ export struct ParagraphConfig {
 export struct TextLayout {
   fontName: str = ""
   size: int = 0
-  lineHeight: float = 0f
   contentHeight: float = 0f
   verticalOffset: float = 0f
   lines: list<LineLayout> = []
-  w: int = 0
-  h: int = 0
+  width: int = 0
+  height: int = 0
 }
 
 #
 # TextLayoutEngine#paragraph
 #
 export method paragraph (tutil: TextLayoutEngine, text: str, settings: ParagraphConfig) : TextLayout {
-  let c = tutil.canvas
   let width = settings.width
   let height = settings.height
   let fontname = settings.fontName
-
-  c.setFont(fontname, settings.fontSize)
-  let fontnameToUse = fontname
 
   # In the future we will support splitting the text into paragraphs based on \r\n delimiters.
   let linesIn: list<str> = [ text ]
@@ -146,7 +151,7 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
         prevMin = min
         let cur = (min.asFloat() + (max - min).asFloat()/2f).round()
         let thisTest = chunks.extract(0, cur).join("").trim()
-        let mwidth = c.measureTextWidth(thisTest)
+        let mwidth = tutil.measureTextWidth(thisTest, fontname, settings.fontSize)
         if (mwidth > width) {
           max = cur
         } else {
@@ -177,11 +182,15 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
 
   let resultB: list<LineLayout> = []
 
+  # Get metrics for this font/size
+  # var m = metrics.get(font.family, font.style, settings.fontSize)
+  let lineHeightCalc = settings.fontSize.asFloat() * 1.07 * settings.lineHeight
+
   for idxLine = 0 upto resultA.length {
     let line = resultA[idxLine]
 
     # Determine line width
-    let w = c.measureTextWidth(line)
+    let w = tutil.measureTextWidth(line, fontname, settings.fontSize)
     if (w > maxWidth) {
       maxWidth = w
     }
@@ -198,14 +207,10 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
     resultB.push(new LineLayout {
       text = line
       left = xleft
+      lineHeight = lineHeightCalc
       width = w.round()
     })
-
   }
-
-  # Get metrics for this font/size
-  # var m = metrics.get(font.family, font.style, settings.fontSize)
-  let lineHeightCalc = settings.fontSize.asFloat() * 1.07 * settings.lineHeight
 
   # Adjust vertical offset to fit in space
   mut verticalOffsetCalc = 0
@@ -220,23 +225,22 @@ export method paragraph (tutil: TextLayoutEngine, text: str, settings: Paragraph
   }
 
   return new TextLayout {
-    fontName = fontnameToUse
-    size = settings.fontSize
+    fontName = fontname
     contentHeight = contentHeightCalc
-    lineHeight = lineHeightCalc
     verticalOffset = verticalOffsetCalc.asFloat()
+    size = settings.fontSize
     lines = resultB
-    w = width.round()
-    h = height.round()
+    width = width.round()
+    height = height.round()
   }
 }
 
 
-export method fillFittedText(c: Canvas, spec: TextLayout, x: float, y: float) {
+export method drawTextLayout(c: Canvas, spec: TextLayout, x: float, y: float) {
   c.setFont(spec.fontName, spec.size)
   mut yCur = y + spec.verticalOffset + (spec.size.asFloat()*0.7)
   for i = 0 upto spec.lines.length {
     c.fillText(spec.lines[i].text, (x + spec.lines[i].left.asFloat()), yCur)
-    yCur = yCur + spec.lineHeight
+    yCur = yCur + spec.lines[i].lineHeight
   }
 }
