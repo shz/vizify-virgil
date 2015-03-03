@@ -25,6 +25,24 @@ export extern vizify {
 
   method measureTextWidth (tutil: TextLayoutEngine, text: str, font: Font, pxFontSize: int) : float
   method getFontMetrics (tutil: TextLayoutEngine, font: Font, pxFontSize: int) : FontMetrics
+
+  struct LineLayout {
+    text: str
+    left: int
+    width: int
+    lineHeight: float
+  }
+
+  struct TextLayout {
+    font: Font
+    size: int
+    contentHeight: float
+    verticalOffset: float
+    lines: list<LineLayout>
+    width: int
+    height: int
+  }
+
 }
 
 #
@@ -73,13 +91,6 @@ method tokenizeByWhiteSpace(haystackIn: str) : list<str> {
   return result
 }
 
-export struct LineLayout {
-  text: str = ""
-  left: int = 0
-  width: int = 0
-  lineHeight: float = 0f
-}
-
 export struct ParagraphConfig {
  width: float = 100f
  height: float = 100f
@@ -88,16 +99,6 @@ export struct ParagraphConfig {
  lineHeight: float = 1.32
  textAlign: str = "left"
  verticalAlign: str = "top"
-}
-
-export struct TextLayout {
-  font: Font = null
-  size: int = 0
-  contentHeight: float = 0f
-  verticalOffset: float = 0f
-  lines: list<LineLayout> = []
-  width: int = 0
-  height: int = 0
 }
 
 #

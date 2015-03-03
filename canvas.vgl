@@ -110,6 +110,9 @@ export extern vizify {
   method stroke(c: Canvas)
   method fill(c: Canvas)
 
+  # Laid-out text
+  method drawTextLayout(c: Canvas, spec: TextLayout, x: float, y: float)
+
   #
   # COMPUTATION/INQUIRY
   #
@@ -124,6 +127,8 @@ export extern vizify {
   # This method's computation is based on the current value of the
   # font attribute (both the font family and the pixel-based font size).
   method measureTextWidth(c: Canvas, text: str) : float
+
+
 }
 
 #
@@ -147,11 +152,3 @@ export method fillTextAligned(c: Canvas, text: str, x: float, y: float, aligntyp
   c.fillText(text, theX, y)
 }
 
-export method drawTextLayout(c: Canvas, spec: TextLayout, x: float, y: float) {
-  c.setFont(spec.font, spec.size)
-  mut yCur = y + spec.verticalOffset + (spec.size.asFloat()*0.7)
-  for i = 0 upto spec.lines.length {
-    c.fillText(spec.lines[i].text, (x + spec.lines[i].left.asFloat()), yCur)
-    yCur = yCur + spec.lines[i].lineHeight
-  }
-}
