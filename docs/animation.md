@@ -15,12 +15,12 @@ function renderer(rc: RenderContext<Data, Layout>) {
   # your canvas to apply your animation on, and a float in [0-1]
   # indicating the % through the animation. Note that you DON'T do
   # drawing in this perform method; you just set up to draw instead.
-  let childRc = anim.perform(lambda (c : Canvas, progress : float) {
+  let childRc = anim.perform(lambda (c: Canvas, progress: float) {
     c.setGlobalAlpha(progress)
   })
 
-  # Drawing is, as usual, done through the RenderContext's .draw() method
-  #childRc.draw(...) # This will have a fade applied
+  # Drawing is, as usual, done through the RenderContext's .apply() method
+  childRc.apply(...) # This will have a fade applied
 
   # You can also define methods on Animation<'T> itself to do the work
   # for you. Several default are provided, and they all just use
