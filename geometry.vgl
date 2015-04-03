@@ -1,17 +1,17 @@
 export extern vizify {
   struct Point {
-    x: float = 0f
-    y: float = 0f
+    x: float
+    y: float
   }
 
   struct Size {
-    width: float = 0f
-    height: float = 0f
+    width: float
+    height: float
   }
 
   struct Rect {
-    origin: Point = null
-    size: Size = null
+    origin: Point
+    size: Size
   }
 }
 
