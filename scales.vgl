@@ -1,0 +1,73 @@
+#
+# List utility methods
+#
+
+# Find the min/max of a list<float>
+export method range(l: list<float>) : list<float> {
+  mut started = false
+  mut max = 0f
+  mut min = 0f
+
+  for i = 0 upto l.length {
+    let n = n[i]
+
+    if !started {
+      started = true
+      max = n
+      min = n
+    } else {
+      if n > max {
+        max = n
+      }
+      if n < min {
+        min = n
+      }
+    }
+  }
+
+  return [min, max]
+}
+
+# Find the min/max of a list<int>
+export method range(l: list<int>) : list<int> {
+  mut started = false
+  mut max = 0
+  mut min = 0
+
+  for i = 0 upto l.length {
+    let n = n[i]
+
+    if !started {
+      started = true
+      max = n
+      min = n
+    } else {
+      if n > max {
+        max = n
+      }
+      if n < min {
+        min = n
+      }
+    }
+  }
+
+  return [min, max]
+}
+
+# Normalizes a list to the range [0f, 1f]
+export method normalize(l: list<float>) : list<float> {
+  return l.normalizeTo(0f, 1f)
+}
+
+# Normalizes a list to the specified range
+export method normalizeTo(l: list<float>, min: float, max: float) : list<float> {
+  let range = l.range()
+  let magnitude = range[1] - range[0]
+  let newList = new list<float>
+
+  for i = 0 upto l.length {
+    newList.push(min + (max - min) * (l[i] + range[0]) / magnitude)
+  }
+
+  return newList
+}
